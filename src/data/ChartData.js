@@ -20,6 +20,13 @@ import { createNewTechnicalIndicator, createTechnicalIndicators } from './techni
 import { DEV } from '../utils/env'
 import { TechnicalIndicatorSeries } from './technicalindicator/TechnicalIndicator'
 import Delegate from './delegate/Delegate'
+export var IogoData={
+  width:100,
+  height:100,
+  x:0,
+  y:0,
+  imgUrl:''
+}
 
 export const InvalidateLevel = {
   NONE: 0,
@@ -53,6 +60,9 @@ export const DrawActionType = {
 
 const MAX_DATA_SPACE = 50
 const MIN_DATA_SPACE = 3
+export function modifyLogoData(data){
+  IogoData=data;
+}
 
 export default class ChartData {
   constructor (styleOptions, invalidateHandler) {

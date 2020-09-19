@@ -14,7 +14,7 @@
 
 import ChartPane, { CANDLE_STICK_PANE_TAG } from './pane/ChartPane'
 import { isArray, clone } from './utils/typeChecks'
-import { GraphicMarkType } from './data/ChartData'
+import { GraphicMarkType,modifyLogoData } from './data/ChartData'
 import { DEV } from './utils/env'
 
 export default class Chart {
@@ -155,7 +155,12 @@ export default class Chart {
   applyNewData (dataList, more) {
     this._chartPane.applyNewData(dataList, more)
   }
-
+  /**
+   * 添加Logo
+   */
+  setLogoData (data){
+    modifyLogoData(data);
+  }
   /**
    * 添加历史更多数据
    * @param dataList
