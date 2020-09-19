@@ -14,12 +14,12 @@
 
 import ChartPane, { CANDLE_STICK_PANE_TAG } from './pane/ChartPane'
 import { isArray, clone } from './utils/typeChecks'
-import { GraphicMarkType,modifyLogoData } from './data/ChartData'
+import { GraphicMarkType } from './data/ChartData'
 import { DEV } from './utils/env'
 
 export default class Chart {
   constructor (container, styleOptions) {
-    this._chartPane = new ChartPane(container, styleOptions);
+    this._chartPane = new ChartPane(container, styleOptions)
   }
 
   /**
@@ -156,13 +156,6 @@ export default class Chart {
     this._chartPane.applyNewData(dataList, more)
   }
 
-  /**
-   * 添加Logo
-   */
-  setLogoData (data){
-    modifyLogoData(data);
-  }
-  
   /**
    * 添加历史更多数据
    * @param dataList
