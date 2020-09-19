@@ -16,7 +16,8 @@ import TechnicalIndicatorView from './TechnicalIndicatorView'
 import { LineStyle, ChartType } from '../data/options/styleOptions'
 import { drawHorizontalLine, drawVerticalLine, getFont, drawLine } from '../utils/canvas'
 import { formatPrecision, formatValue } from '../utils/format'
-
+import { IogoData } from '../data/ChartData'
+var imgObj=new Image();
 export default class CandleStickView extends TechnicalIndicatorView {
   _draw () {
     this._drawGrid()
@@ -120,6 +121,10 @@ export default class CandleStickView extends TechnicalIndicatorView {
    * @private
    */
   _drawCandleStick () {
+    imgObj.src = IogoData.imgUrl;
+    if(imgObj.src!=''){
+      this._ctx.drawImage(imgObj, IogoData.x, this._ctx.canvas.height-IogoData.y,IogoData.width,IogoData.height);
+    }
     const candleStickOptions = this._chartData.styleOptions().candleStick
     this._drawGraphics((x, i, kLineData, halfBarSpace, barSpace) => {
       this._drawCandleStickBar(x, halfBarSpace, barSpace, kLineData, candleStickOptions.bar, candleStickOptions.bar.style)
