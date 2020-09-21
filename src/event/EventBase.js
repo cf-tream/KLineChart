@@ -323,8 +323,8 @@ export default class EventBase {
         rootElement.removeEventListener('mouseup', boundMouseUpHandler)
       }
 
-      rootElement.addEventListener('touchmove', boundMouseMoveWithDownHandler, { passive: false })
-      rootElement.addEventListener('touchend', boundMouseUpHandler, { passive: false })
+      rootElement.addEventListener('touchmove', boundMouseMoveWithDownHandler, { passive: true })
+      rootElement.addEventListener('touchend', boundMouseUpHandler, { passive: true })
 
       this._clearLongTapTimeout()
 
@@ -386,7 +386,7 @@ export default class EventBase {
     // it treats a touchstart and the following touchmove events as cancelable=false,
     // so we can't prevent them (as soon we subscribe on touchmove inside handler of touchstart).
     // And we'll get scroll of the page along with chart's one instead of only chart's scroll.
-    this._target.addEventListener('touchmove', () => {}, { passive: false })
+    this._target.addEventListener('touchmove', () => {}, { passive: true })
   }
 
   _initPinch () {
@@ -417,7 +417,7 @@ export default class EventBase {
           preventDefault(event)
         }
       },
-      { passive: false }
+      { passive: true }
     )
 
     this._target.addEventListener('touchend', (event) => {
