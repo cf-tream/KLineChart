@@ -128,6 +128,9 @@ export default class ChartEvent {
   _pressedMouseMoveEvent (event) {
     iSpeedX=event.clientX-lastX;     
     lastX=event.clientX;
+    if(iSpeedX==lastX){
+      iSpeedX=0;
+    }
     event.localX -= this._chartContentSize.contentLeft
     if (this._chartData.dragGraphicMarkFlag()) {
       this._graphicMarkEventHandler.pressedMouseMoveEvent(event)
