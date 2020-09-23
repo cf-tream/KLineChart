@@ -20,6 +20,16 @@ import { createNewTechnicalIndicator, createTechnicalIndicators } from './techni
 import { DEV } from '../utils/env'
 import { TechnicalIndicatorSeries } from './technicalindicator/TechnicalIndicator'
 import Delegate from './delegate/Delegate'
+var timer=null;
+
+// 是否还在运动
+export var isStillMoving=false;
+// 减速中的数值 
+export var decelerationValues=0;
+
+// 移动的坐标轴
+export var distanceData=0;
+
 export var IogoData={
   width:100,
   height:100,
@@ -523,10 +533,21 @@ export default class ChartData {
   }
 
   /**
-   * 滚动
+   * 滚动  3 distance改变这个可以改变运动
    * @param distance
    */
-  scroll (distance) {
+  scroll (distance,move) {
+    if(move && move>=2 || move<=-2){
+      isStillMoving=true;
+      clearTimeout(timer);
+      timer=setInterval(()=>{
+        this.scroll(distance+move,move*=0.95);
+        decelerationValues=distance+move;
+      },15);
+    }else{
+      isStillMoving=false;
+      clearTimeout(timer);
+    }
     const distanceBarCount = distance / this._dataSpace
     this._offsetRightBarCount = this._preOffsetRightBarCount - distanceBarCount
     this.adjustOffsetBarCount()
@@ -577,7 +598,7 @@ export default class ChartData {
     }
 
     const minRightOffsetBarCount = -dataSize + 1 + Math.min(this._rightMinVisibleBarCount, dataSize) - difBarCount
-
+    
     if (this._offsetRightBarCount < minRightOffsetBarCount) {
       this._offsetRightBarCount = minRightOffsetBarCount
     }

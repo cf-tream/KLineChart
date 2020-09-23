@@ -13,7 +13,7 @@
  */
 
 import EventHandler, { isMouse, isTouch } from './EventHandler'
-
+export var distanceA=0;
 export default class ZoomScrollEventHandler extends EventHandler {
   constructor (chartData) {
     super(chartData)
@@ -118,6 +118,7 @@ export default class ZoomScrollEventHandler extends EventHandler {
     })
   }
 
+  // 按下鼠标移动事件  2
   pressedMouseMoveEvent (event) {
     this._performCross(event, false, cross => {
       const crossHairPoint = { x: event.localX, y: cross.y }
@@ -128,7 +129,9 @@ export default class ZoomScrollEventHandler extends EventHandler {
           return
         }
       }
+      // event.localX 移动的坐标轴        this._startScrollPoint.x 鼠标按下的坐标轴
       const distance = event.localX - this._startScrollPoint.x
+      distanceA= event.localX - this._startScrollPoint.x
       this._chartData.setCrossHairPointPaneTag(crossHairPoint, cross.tag)
       this._chartData.scroll(distance)
     })

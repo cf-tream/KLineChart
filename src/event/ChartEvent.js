@@ -13,10 +13,13 @@
  */
 
 import EventBase from './EventBase'
-import ZoomScrollEventHandler from './ZoomScrollEventHandler'
+import ZoomScrollEventHandler,{distanceA} from './ZoomScrollEventHandler'
 import GraphicMarkEventHandler from './GraphicMarkEventHandler'
-import { GraphicMarkType } from '../data/ChartData'
+import { GraphicMarkType ,decelerationValues,isStillMoving} from '../data/ChartData'
 import KeyBoardEventHandler from './KeyBoardEventHandler'
+
+var iSpeedX=0;    
+var lastX=0;
 
 export default class ChartEvent {
   constructor (target, chartData, xAxis, yAxis) {
@@ -60,10 +63,14 @@ export default class ChartEvent {
     this._zoomScrollEventHandler.pinchEvent(middlePoint, scale)
   }
 
+  // 鼠标抬起事件
   _mouseUpEvent (event) {
     this._target.style.cursor = 'crosshair'
     event.localX -= this._chartContentSize.contentLeft
     this._graphicMarkEventHandler.mouseUpEvent(event)
+    if(iSpeedX>5||iSpeedX<-5){
+      this._chartData.scroll(distanceA,iSpeedX);
+    }
   }
 
   _mouseLeaveEvent (event) {
@@ -73,6 +80,7 @@ export default class ChartEvent {
     }
   }
 
+  // 鼠标移动事件
   _mouseMoveEvent (event) {
     event.localX -= this._chartContentSize.contentLeft
     if (this._chartData.shouldInvalidateGraphicMark()) {
@@ -96,7 +104,13 @@ export default class ChartEvent {
     }
   }
 
+  // 鼠标点击事件
   _mouseDownEvent (event) {
+    iSpeedX=0;
+    lastX=0;
+    if(isStillMoving){
+      this._chartData.scroll(decelerationValues);
+    }
     this._target.style.cursor = 'pointer'
     event.localX -= this._chartContentSize.contentLeft
     this._graphicMarkEventHandler.mouseDownEvent(event)
@@ -110,7 +124,10 @@ export default class ChartEvent {
     this._graphicMarkEventHandler.mouseRightDownEvent(event)
   }
 
+  // 鼠标拖动事件  1
   _pressedMouseMoveEvent (event) {
+    iSpeedX=event.clientX-lastX;     
+    lastX=event.clientX;
     event.localX -= this._chartContentSize.contentLeft
     if (this._chartData.dragGraphicMarkFlag()) {
       this._graphicMarkEventHandler.pressedMouseMoveEvent(event)
