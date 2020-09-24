@@ -123,7 +123,7 @@ export default class CandleStickView extends TechnicalIndicatorView {
   _drawCandleStick () {
     imgObj.src = IogoData.imgUrl;
     if(imgObj.src!=''){
-      this._ctx.drawImage(imgObj, IogoData.x, this._ctx.canvas.height-IogoData.y,IogoData.width,IogoData.height);
+      this._ctx.drawImage(imgObj, (this._ctx.canvas.width-IogoData.width/2)*IogoData.x, (this._ctx.canvas.height-IogoData.height/2)*IogoData.y,IogoData.width,IogoData.height);
     }
     const candleStickOptions = this._chartData.styleOptions().candleStick
     this._drawGraphics((x, i, kLineData, halfBarSpace, barSpace) => {
