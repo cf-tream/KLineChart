@@ -24,6 +24,8 @@ var timer=null;
 
 // 标记线的数据
 export var labeledLine=[];
+// 样式手型打开
+export var cursorPointer=false;
 
 // 标记线是否匹配
 export var labeledLineMatching=false;
@@ -146,11 +148,7 @@ export function deleteItionLabeledLine(id){
   })
   labeledLineMatching=false;
   labeledLineMatchingData={};
-}
-
-// 固定横轴标记线
-export function fixedItionLabeledLine(id){
-  console.log(id);
+  cursorPointer=false;
 }
 
 /**
@@ -853,7 +851,7 @@ export default class ChartData {
    */
   getLabeledLine (yAxis,event) {
     if(labeledLine && labeledLine.length && labeledLine.length>=1){
-      if(labeledLineHoldXY){
+      if(labeledLineHoldXY && labeledLineMatchingData && labeledLineMatchingData.item){
         this.triggerValue=labeledLineMatchingData.item.boxStyle.height/2;
       }else{
         this.triggerValue=2
@@ -864,8 +862,10 @@ export default class ChartData {
           labeledLineMatching=true;
           labeledLineMatchingData={item:labeledLine[i]};
           this.findValue=true;
+          cursorPointer=true;
           break;
         }else{
+          cursorPointer=false;
           labeledLineMatching=false;
         }
       }

@@ -15,7 +15,7 @@
 import EventBase from './EventBase'
 import ZoomScrollEventHandler,{distanceA} from './ZoomScrollEventHandler'
 import GraphicMarkEventHandler from './GraphicMarkEventHandler'
-import { GraphicMarkType ,decelerationValues,isStillMoving,triggerPunctuationClick} from '../data/ChartData'
+import { GraphicMarkType ,decelerationValues,isStillMoving,triggerPunctuationClick,cursorPointer} from '../data/ChartData'
 import KeyBoardEventHandler from './KeyBoardEventHandler'
 
 var iSpeedX=0;    
@@ -65,7 +65,11 @@ export default class ChartEvent {
 
   // 鼠标抬起事件
   _mouseUpEvent (event) {
-    this._target.style.cursor = 'crosshair'
+    if(cursorPointer){
+      this._target.style.cursor = 'pointer'
+    }else{
+      this._target.style.cursor = 'crosshair'
+    }
     event.localX -= this._chartContentSize.contentLeft
     this._graphicMarkEventHandler.mouseUpEvent(event)
     if(iSpeedX>5||iSpeedX<-5){
@@ -82,6 +86,11 @@ export default class ChartEvent {
 
   // 鼠标移动事件
   _mouseMoveEvent (event) {
+    if(cursorPointer){
+      this._target.style.cursor = 'pointer'
+    }else{
+      this._target.style.cursor = 'crosshair'
+    }
     event.localX -= this._chartContentSize.contentLeft
     if (this._chartData.shouldInvalidateGraphicMark()) {
       this._graphicMarkEventHandler.mouseMoveEvent(event)
