@@ -220,13 +220,10 @@
                     }
                 ]
                 kLineChart.modifyLabeledLine(data.item.id,modify);
-                kLineChart.updateData({...Kdata[Kdata.length-1]})
-            // }else if(item.event=="fixed"){  
-                // kLineChart.fixedLabeledLine(data.item.id);
-                // kLineChart.updateData({...Kdata[Kdata.length-1]})
+                kLineChart.refreshTheView();
             }else if(item.event=="delete"){ //删除方法
                 kLineChart.deleteLabeledLine(data.item.id);
-                kLineChart.updateData({...Kdata[Kdata.length-1]})
+                kLineChart.refreshTheView();
             }
         }
 
