@@ -27,6 +27,8 @@ export var labeledLine=[];
 // 样式手型打开
 export var cursorPointer=false;
 
+// 样式改变的元素高度
+export var masterMapHeight=0;
 // 标记线是否匹配
 export var labeledLineMatching=false;
 // 标记线匹配的数据
@@ -179,6 +181,10 @@ export function triggerPunctuationClick (event) {
       })
     }
   }
+}
+
+export function masterMapHeightAlter(data){
+  masterMapHeight=data;
 }
 
 export default class ChartData {

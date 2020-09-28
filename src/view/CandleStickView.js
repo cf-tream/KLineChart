@@ -16,7 +16,7 @@ import TechnicalIndicatorView from './TechnicalIndicatorView'
 import { LineStyle, ChartType } from '../data/options/styleOptions'
 import { drawHorizontalLine, drawVerticalLine, getFont, drawLine } from '../utils/canvas'
 import { formatPrecision, formatValue } from '../utils/format'
-import { IogoData,labeledLine } from '../data/ChartData'
+import { IogoData,labeledLine,masterMapHeightAlter } from '../data/ChartData'
 var imgObj=new Image();
 export default class CandleStickView extends TechnicalIndicatorView {
   _draw () {
@@ -265,6 +265,7 @@ export default class CandleStickView extends TechnicalIndicatorView {
    * @private
    */
   _theHorizontalAxisPrompt () {
+    masterMapHeightAlter(this._ctx.canvas.height);
     if(labeledLine && labeledLine.length && labeledLine.length>=1){
       labeledLine.forEach(item=>{
         let close = item.value;

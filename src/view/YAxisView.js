@@ -17,7 +17,7 @@ import { YAxisPosition } from '../data/options/styleOptions'
 import { calcTextWidth, drawHorizontalLine, drawVerticalLine, getFont } from '../utils/canvas'
 import { formatBigNumber, formatPrecision } from '../utils/format'
 import { isValid } from '../utils/typeChecks'
-import { labeledLine } from '../data/ChartData'
+import { labeledLine,masterMapHeight } from '../data/ChartData'
 
 export default class YAxisView extends View {
   constructor (container, chartData, yAxis, additionalDataProvider) {
@@ -216,17 +216,19 @@ export default class YAxisView extends View {
    * 
    */
   _theHorizontalAxisPromptText (yAxisOptions){
-    let textStyle={};
-    labeledLine.forEach(item=>{
-      textStyle=item.textStyle;
-      this._drawMarkLabel(
-        yAxisOptions, item.value, 2,
-        textStyle.size, textStyle.weight, textStyle.family,
-        textStyle.color, textStyle.background,
-        textStyle.paddingLeft, textStyle.paddingTop,
-        textStyle.paddingRight, textStyle.paddingBottom
-      )
-    })
+    if(masterMapHeight==this._ctx.canvas.height){
+      let textStyle={};
+      labeledLine.forEach(item=>{
+        textStyle=item.textStyle;
+        this._drawMarkLabel(
+          yAxisOptions, item.value, 2,
+          textStyle.size, textStyle.weight, textStyle.family,
+          textStyle.color, textStyle.background,
+          textStyle.paddingLeft, textStyle.paddingTop,
+          textStyle.paddingRight, textStyle.paddingBottom
+        )
+      })
+    }
   }
 
   /**
