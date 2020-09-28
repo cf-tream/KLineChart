@@ -58,5 +58,8 @@
     "rollup-plugin-progress": "^1.1.1",
     "rollup-plugin-terser": "^5.3.0",
     "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5"
   }
 }

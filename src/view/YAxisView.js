@@ -17,6 +17,7 @@ import { YAxisPosition } from '../data/options/styleOptions'
 import { calcTextWidth, drawHorizontalLine, drawVerticalLine, getFont } from '../utils/canvas'
 import { formatBigNumber, formatPrecision } from '../utils/format'
 import { isValid } from '../utils/typeChecks'
+import { labeledLine } from '../data/ChartData'
 
 export default class YAxisView extends View {
   constructor (container, chartData, yAxis, additionalDataProvider) {
@@ -33,6 +34,7 @@ export default class YAxisView extends View {
       this._drawTickLabels(yAxisOptions)
       this._drawTechnicalIndicatorLastValue(yAxisOptions)
       this._drawLastPriceLabel(yAxisOptions)
+      this._theHorizontalAxisPromptText(yAxisOptions);
     }
   }
 
@@ -174,7 +176,7 @@ export default class YAxisView extends View {
   }
 
   /**
-   * 绘制最新价文字
+   * 绘制最新价文字 d
    * @private
    */
   _drawLastPriceLabel (yAxisOptions) {
@@ -207,6 +209,24 @@ export default class YAxisView extends View {
       priceMarkText.paddingLeft, priceMarkText.paddingTop,
       priceMarkText.paddingRight, priceMarkText.paddingBottom
     )
+  }
+
+  /**
+   * 绘制标记线的文字
+   * 
+   */
+  _theHorizontalAxisPromptText (yAxisOptions){
+    let textStyle={};
+    labeledLine.forEach(item=>{
+      textStyle=item.textStyle;
+      this._drawMarkLabel(
+        yAxisOptions, item.value, 2,
+        textStyle.size, textStyle.weight, textStyle.family,
+        textStyle.color, textStyle.background,
+        textStyle.paddingLeft, textStyle.paddingTop,
+        textStyle.paddingRight, textStyle.paddingBottom
+      )
+    })
   }
 
   /**

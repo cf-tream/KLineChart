@@ -14,7 +14,7 @@
 
 import ChartPane, { CANDLE_STICK_PANE_TAG } from './pane/ChartPane'
 import { isArray, clone } from './utils/typeChecks'
-import { GraphicMarkType,modifyLogoData } from './data/ChartData'
+import { GraphicMarkType,modifyLogoData,additionLabeledLine,modifyItionLabeledLine,deleteItionLabeledLine,fixedItionLabeledLine  } from './data/ChartData'
 import { DEV } from './utils/env'
 
 export default class Chart {
@@ -161,6 +161,33 @@ export default class Chart {
   setLogoData (data){
     modifyLogoData(data);
   }
+  /**
+   * 添加 横轴标记线
+   */
+  addLabeledLine (data){
+    additionLabeledLine(data);
+  }
+  /**
+   * 修改 横轴标记线
+   */
+  modifyLabeledLine (id,data){
+    modifyItionLabeledLine(id,data);
+  }
+
+  /**
+   * 删除 横轴标记线
+   */
+  deleteLabeledLine (id){
+    deleteItionLabeledLine(id);
+  }
+
+  /**
+   * 固定 横轴标记线
+   */
+  fixedLabeledLine  (id){
+    fixedItionLabeledLine(id);
+  }
+  
   /**
    * 添加历史更多数据
    * @param dataList

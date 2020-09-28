@@ -15,7 +15,7 @@
 import EventHandler, { isMouse, isTouch } from './EventHandler'
 export var distanceA=0;
 export default class ZoomScrollEventHandler extends EventHandler {
-  constructor (chartData) {
+  constructor (chartData, yAxis) {
     super(chartData)
     // 开始滚动时坐标点
     this._startScrollPoint = {}
@@ -27,6 +27,7 @@ export default class ZoomScrollEventHandler extends EventHandler {
     this._touchZoomed = false
     // 用来记录捏合缩放的尺寸
     this._pinchScale = 1
+    this._yAxis = yAxis
   }
 
   pinchStartEvent () {
@@ -55,6 +56,14 @@ export default class ZoomScrollEventHandler extends EventHandler {
     }, () => {
       this._chartData.setCrossHairPointPaneTag(null, null)
     })
+  }
+
+  // 判断此条线是否到达标记线中
+  mouseMoveLabeledLine(event){
+    if (!isMouse(event)) {
+      return
+    }
+    this._chartData.getLabeledLine(this._yAxis,event);
   }
 
   mouseWheelEvent (event) {

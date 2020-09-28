@@ -15,7 +15,7 @@
 import EventBase from './EventBase'
 import ZoomScrollEventHandler,{distanceA} from './ZoomScrollEventHandler'
 import GraphicMarkEventHandler from './GraphicMarkEventHandler'
-import { GraphicMarkType ,decelerationValues,isStillMoving} from '../data/ChartData'
+import { GraphicMarkType ,decelerationValues,isStillMoving,triggerPunctuationClick} from '../data/ChartData'
 import KeyBoardEventHandler from './KeyBoardEventHandler'
 
 var iSpeedX=0;    
@@ -46,7 +46,7 @@ export default class ChartEvent {
     this._target.addEventListener('keydown', this._boundKeyBoardDownEvent)
     this._boundContextMenuEvent = (e) => { e.preventDefault() }
     this._target.addEventListener('contextmenu', this._boundContextMenuEvent, false)
-    this._zoomScrollEventHandler = new ZoomScrollEventHandler(chartData)
+    this._zoomScrollEventHandler = new ZoomScrollEventHandler(chartData, yAxis)
     this._graphicMarkEventHandler = new GraphicMarkEventHandler(chartData, xAxis, yAxis)
     this._keyBoardEventHandler = new KeyBoardEventHandler(chartData)
   }
@@ -88,6 +88,7 @@ export default class ChartEvent {
     }
     if (this._checkZoomScroll()) {
       this._zoomScrollEventHandler.mouseMoveEvent(event)
+      this._zoomScrollEventHandler.mouseMoveLabeledLine(event)
     }
   }
 
@@ -106,6 +107,7 @@ export default class ChartEvent {
 
   // 鼠标点击事件
   _mouseDownEvent (event) {
+    triggerPunctuationClick(event);
     iSpeedX=0;
     lastX=0;
     if(isStillMoving){

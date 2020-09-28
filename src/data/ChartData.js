@@ -22,6 +22,16 @@ import { TechnicalIndicatorSeries } from './technicalindicator/TechnicalIndicato
 import Delegate from './delegate/Delegate'
 var timer=null;
 
+// 标记线的数据
+export var labeledLine=[];
+
+// 标记线是否匹配
+export var labeledLineMatching=false;
+// 标记线匹配的数据
+export var labeledLineMatchingData={};
+// 暂存的标记线的XY轴数据
+export var labeledLineHoldXY=null;
+
 // 是否还在运动
 export var isStillMoving=false;
 // 减速中的数值 
@@ -72,6 +82,105 @@ const MAX_DATA_SPACE = 50
 const MIN_DATA_SPACE = 3
 export function modifyLogoData(data){
   IogoData=data;
+}
+
+// 添加标记线数据
+export function additionLabeledLine(data){
+  // 生产不重复的id
+  let id=Number(Math.random().toString().substr(3,12) + Date.now()).toString(36);
+  data.id=id;
+  labeledLine.push({...data});
+}
+
+// 修改横轴标记线
+export function modifyItionLabeledLine(id,data){
+  labeledLine.forEach(item=>{
+    if(item.id==id){
+      data.forEach(info=>{
+        if(info.name=='main'){
+          for(let i in info){
+            item[i]=info[i];
+            labeledLineMatchingData.item[i]=info[i];
+          }
+        }else if(info.name=="lineStyle"){
+          for(let i in info){
+            item.lineStyle[i]=info[i];
+            labeledLineMatchingData.item.lineStyle[i]=info[i];
+          }
+        }else if(info.name=="textStyle"){
+          for(let i in info){
+            item.textStyle[i]=info[i];
+            labeledLineMatchingData.item.textStyle[i]=info[i];
+          }
+        }else if(info.name=="boxStyle"){
+          for(let i in info){
+            if(i=='item'){
+              item.boxStyle.item.forEach((outer,index)=>{
+                info.item.forEach(li=>{
+                  if(li.name==outer.name){
+                    for(let L in li){
+                      outer[L]=li[L];
+                      let hold=labeledLineMatchingData.item.boxStyle.item[index];
+                      hold[L]=li[L];
+                    }
+                  }
+                })
+              })
+            }else{
+              item.boxStyle[i]=info[i];
+              labeledLineMatchingData.item.boxStyle[i]=info[i];
+            }
+          }
+        }
+      })
+    }
+  })
+}
+
+// 删除横轴标记线
+export function deleteItionLabeledLine(id){
+  labeledLine.forEach((item,index)=>{
+    if(item.id==id){
+      labeledLine.splice(index,1);
+    }
+  })
+  labeledLineMatching=false;
+  labeledLineMatchingData={};
+}
+
+// 固定横轴标记线
+export function fixedItionLabeledLine(id){
+  console.log(id);
+}
+
+/**
+ * 点击触发是否点了标点线的按钮
+ */
+export function triggerPunctuationClick (event) {
+  if(labeledLineMatching){
+    let w = labeledLineMatchingData.item.boxStyle.width;
+    let h = labeledLineMatchingData.item.boxStyle.height;;
+    let x = labeledLineHoldXY.x;
+    let y = labeledLineHoldXY.y-h/2;
+    let y1 = y + h;
+    if(x>w){
+      x = x-w;
+    }
+    let x1 = x + w;
+    let useX = x;
+    let useX1 = x;
+    if(event.pageX>x && event.pageX<x1 && event.pageY>y && event.pageY<y1){
+      labeledLineMatchingData.item.boxStyle.item.forEach(data=>{
+        useX1 += data.width;
+        if(data.clickable){
+          if(event.pageX>useX && event.pageX<useX1 && event.pageY>y && event.pageY<y1){
+            labeledLineMatchingData.item.agentClick(data,labeledLineMatchingData);
+          }
+        }
+        useX += data.width;
+      })
+    }
+  }
 }
 
 export default class ChartData {
@@ -170,6 +279,12 @@ export default class ChartData {
       [DrawActionType.DRAW_CANDLE]: new Delegate(),
       [DrawActionType.DRAW_TECHNICAL_INDICATOR]: new Delegate()
     }
+    // 移动的y值
+    this.priceY = 0;
+    // 触发的值
+    this.triggerValue=0;
+    // 是否找到值
+    this.findValue=false;
   }
 
   /**
@@ -730,5 +845,38 @@ export default class ChartData {
    */
   drawActionDelegate (type) {
     return this._drawActionDelegate[type]
+  }
+
+
+   /**
+   * 标线文字提示框的数据集合
+   */
+  getLabeledLine (yAxis,event) {
+    if(labeledLine && labeledLine.length && labeledLine.length>=1){
+      if(labeledLineHoldXY){
+        this.triggerValue=labeledLineMatchingData.item.boxStyle.height/2;
+      }else{
+        this.triggerValue=2
+      }
+      for(let i=0;i<labeledLine.length;i++){
+        this.priceY = yAxis.convertToPixel(labeledLine[i].value);
+        if(event.localY+this.triggerValue>=this.priceY && event.localY-this.triggerValue<=this.priceY){
+          labeledLineMatching=true;
+          labeledLineMatchingData={item:labeledLine[i]};
+          this.findValue=true;
+          break;
+        }else{
+          labeledLineMatching=false;
+        }
+      }
+      if(this.findValue){
+        if(!labeledLineHoldXY){
+          labeledLineHoldXY={x:event.localX,y:event.localY};
+        }
+        this.findValue=false;
+      }else{
+        labeledLineHoldXY=null;
+      }
+    }
   }
 }

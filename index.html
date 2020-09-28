@@ -1,61 +1,285 @@
-@@ -0,0 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>实验Klinecharts</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <title>Klinecharts</title>
     <script src="./dist/klinecharts.development.js"></script>
     <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        /* #basic-k-line{
+            margin: 0 auto;
+            width: 600px;
+            height: 600px;
+            background: #25272F;
+        } */
+        body{
+            width: 7.5rem;
+        }
+        p{
+            width: 7.5rem;
+            overflow: hidden;
+        }
         #basic-k-line{
             margin: 0 auto;
-            width: 500px;
-            height: 500px;
+            width:7.5rem;
+            height: 6rem;
             background: #25272F;
         }
-        #basic-k-lineA{
-            width: 800px;
-            height: 800px;
+        #basic-k-line1{
+            margin: 0 auto;
+            width:7.5rem;
+            height: 6rem;
             background: #25272F;
         }
     </style>
 </head>
 <body>
-    <div id="basic-k-line" class="k-line-chart"></div>
+    <div>
+        <div id="basic-k-line" class="k-line-chart"></div>
+        <button id="button">点击</button>
+    </div>
+    
+    <!-- <div id="basic-k-line1" class="k-line-chart1"></div> -->
     <script type="module">
-        const kLineChart = klinecharts.init('basic-k-line');
-        let logoData={
-            width:'100',
-            height: '100',
-            x:'100',
-            y:'100',
-            imgUrl: "https://avatar.csdnimg.cn/7/5/8/1_weixin_41272892_1553584856.jpg"
-        }
-        kLineChart.setLogoData(logoData);
-        
-        let Kdata=[
-            { close: 4976.16, high: 4977.99, low: 4970.12, open: 4972.89, timestamp: 1587660000000, volume: 204 },
-            { close: 4977.33, high: 4979.94, low: 4971.34, open: 4973.20, timestamp: 1587660060000, volume: 194 },
-            { close: 4977.93, high: 4977.93, low: 4974.20, open: 4976.53, timestamp: 1587660120000, volume: 197 },
-            { close: 4966.77, high: 4968.53, low: 4962.20, open: 4963.88, timestamp: 1587660180000, volume: 28 },
-            { close: 4961.56, high: 4972.61, low: 4961.28, open: 4961.28, timestamp: 1587660240000, volume: 184 },
-            { close: 4964.19, high: 4964.74, low: 4961.42, open: 4961.64, timestamp: 1587660300000, volume: 191 },
-            { close: 4968.93, high: 4972.70, low: 4964.55, open: 4966.96, timestamp: 1587660360000, volume: 105 },
-            { close: 4979.31, high: 4979.61, low: 4973.99, open: 4977.06, timestamp: 1587660420000, volume: 35 },
-            { close: 4977.02, high: 4981.66, low: 4975.14, open: 4981.66, timestamp: 1587660480000, volume: 135 },
-            { close: 4985.09, high: 4988.62, low: 4980.30, open: 4986.72, timestamp: 1587660540000, volume: 76 }
-        ];
 
-        const updateData = () => {
-            setTimeout(() => {
-                const newData = Kdata[Math.floor(Math.random()*Kdata.length)];
-                kLineChart.updateData(newData)
-                updateData(kLineChart)
-            }, 1000)
+
+        // import 'core-js'
+        const kLineChart = klinecharts.init('basic-k-line');
+        // let logoData={
+        //     width:'100',
+        //     height: '100',
+        //     x:0.5,
+        //     y:0.5,
+        //     imgUrl: "https://avatar-static.segmentfault.com/176/733/1767336339-5f61a9c227466_big64"
+        // }
+        // kLineChart.setLogoData(logoData);
+        let Kdata=[];
+        for(let i=0;i<1000;i++){
+            let suiji=Math.floor(Math.random() * 10);
+            if(suiji>=5){
+                Kdata.push({ close: Math.floor(Math.random() * 100), high: Math.floor(Math.random() * 100), low: Math.floor(Math.random() * 100), open: Math.floor(Math.random() * 100), timestamp: 1587660000000, volume: Math.floor(Math.random() * 100)});
+            }else{
+                Kdata.push({ close: Math.floor(Math.random() * 100), high: Math.floor(Math.random() * 100), low: Math.floor(Math.random() * 100), open: Math.floor(Math.random() * 100), timestamp: 1587660000000, volume: Math.floor(Math.random() * 100)});
+            }
         }
-         
         kLineChart.applyNewData(Kdata)
-        updateData();
+
+        // 水平轴提示
+        let axisData={
+            // 标记线文字提示
+            tooltip:'点击黄',
+            // 标记线值
+            value:55,
+            // 标记线条样式
+            lineStyle:{
+                // 标记线颜色
+                color: '#62C794',
+                dashValue: [3,4],
+                size: 1,
+                style: "dash"
+            },
+            // 标记文字样式
+            textStyle:{
+                color: "#000",
+                background: '#62C794',
+                family: "Helvetica Neue",
+                paddingBottom: 2,
+                paddingLeft: 2,
+                paddingRight: 2,
+                paddingTop: 2,
+                size: 12,
+                weight: "normal"
+            },
+            // 出现弹框样式
+            boxStyle:{
+                width: 240,
+                height: 30,
+                background: '#fff',
+                borderLine: 1,
+                borderColor: '#62C794',
+                borderRadius: 2,
+                item:[
+                    {
+                        name: 'number',
+                        type:'text',
+                        text: '0.12345',
+                        color: '#62C794',
+                        font: '14px bold 黑体',
+                        background: '#fff',
+                        width: 70,
+                        height: 30,
+                        borderLine: 1,
+                        borderColor: '#62C794',
+                        textOffsetTop: 10,
+                        textOffsetLeft: 3
+                    }, {
+                        name: 'sheet',
+                        type:'text',
+                        text: '100 张',
+                        color: '#fff        ',
+                        font: '14px bold 黑体',
+                        background: '#62C794',
+                        width: 80,
+                        height: 30,
+                        borderLine: 1,
+                        borderColor: '#62C794',
+                        textOffsetTop: 10,
+                        textOffsetLeft: 15
+                    }, {
+                        name: 'amend',
+                        event: 'amend',
+                        type:'img',
+                        url: './screenshot/turnOn.png',
+                        background: '#fff',
+                        width: 30,
+                        height: 30,
+                        imgWidth: 20,
+                        imgHeight: 20,
+                        borderLine: 0,
+                        borderColor: '#62C794',
+                        textOffsetTop: 5,
+                        textOffsetLeft: 5,
+                        clickable:true
+                    }, {
+                        name: 'fixed',
+                        event: 'fixed',
+                        type:'img',
+                        url: './screenshot/fuzhi.png',
+                        background: '#fff',
+                        width: 30,
+                        height: 30,
+                        imgWidth: 20,
+                        imgHeight: 20,
+                        borderLine: 0,
+                        borderColor: '#62C794',
+                        textOffsetTop: 5,
+                        textOffsetLeft: 5,
+                        clickable:true
+                    }, {
+                        name:'delete',
+                        event: 'delete',
+                        type:'img',
+                        url: './screenshot/baitian.png',
+                        background: '#fff',
+                        width: 30,
+                        height: 30,
+                        imgWidth: 20,
+                        imgHeight: 20,
+                        borderLine: 0,
+                        borderColor: '#62C794',
+                        textOffsetTop: 5,
+                        textOffsetLeft: 5,
+                        clickable:true
+                    }
+                ]
+            },
+            // 回调函数
+            agentClick(item,data){
+                agentTrigger(item,data);
+            }
+        };
+        kLineChart.addLabeledLine(axisData);
+        kLineChart.updateData({...Kdata[Kdata.length-1]})
+        
+        function agentTrigger(item,data){
+            if(item.event=="amend"){    //修改方法
+                let sum=parseInt(data.item.boxStyle.item[1].text);
+                sum++;
+                let random= Math.random().toFixed(5);
+                let modify=[
+                    {   // main修改主体
+                        name:'main'
+                    }, { // 标记线条
+                        name: 'lineStyle',
+                        color: 'blue'
+                    }, { // 标记文字
+                        name: 'textStyle',
+                        color: 'blue'
+                    }, {  // 弹框样式
+                        name: 'boxStyle',
+                        item: [
+                            {
+                                name: 'number',
+                                text: random
+                            }, {
+                                name: 'sheet',
+                                text: `${sum} 张`
+                            }
+                        ]
+                    }
+                ]
+                kLineChart.modifyLabeledLine(data.item.id,modify);
+                kLineChart.updateData({...Kdata[Kdata.length-1]})
+            }else if(item.event=="fixed"){  //固定方法
+                kLineChart.fixedLabeledLine(data.item.id);
+                kLineChart.updateData({...Kdata[Kdata.length-1]})
+            }else if(item.event=="delete"){ //删除方法
+                kLineChart.deleteLabeledLine(data.item.id);
+                kLineChart.updateData({...Kdata[Kdata.length-1]})
+            }
+        }
+
+        
+
+
+
+        
+        let aaa={
+        candleStick: { //K线 配置
+        priceMark: { //k线内价格 配置
+            display: true,
+            high: { //最高价显示配置
+                display: false,
+                color: '#D9D9D9',
+                textMargin: 5,
+                textSize: 12,
+                textFamily: "Roboto"
+            },
+            low: { //最低价显示配置
+                display: false,
+                color: '#D9D9D9',
+                textMargin: 5,
+                textSize: 12,
+                textFamily: "Roboto"
+            },
+            last: { //最后一个价钱显示配置
+                display: false,
+                upColor: "#26A69A",
+                downColor: "#EF5350",
+                noChangeColor: "#666666",
+                line: { //最后一个价钱的线条配置
+                    display: true,
+                    // 'solid'|'dash'
+                    style: "dash",
+                    dashValue: [4, 4],
+                    size: 1
+                },
+                text: { //最后一个价钱的文字配置
+                    display: true,
+                    size: 12,
+                    paddingLeft: 2,
+                    paddingTop: 2,
+                    paddingRight: 2,
+                    paddingBottom: 2,
+                    color: "#FFFFFF",
+                    family: "Roboto"
+                }
+            }
+        }
+    }
+}
+kLineChart.setStyleOptions(aaa);
+        
+    </script>
+    <script>
+        var html = document.documentElement;
+        html.style.fontSize= 100*(html.clientWidth / 750 )+'px';
+        document.body.style.fontSize = '16px';
     </script>
 </body>
 </html>

@@ -16,7 +16,7 @@ import TechnicalIndicatorView from './TechnicalIndicatorView'
 import { LineStyle, ChartType } from '../data/options/styleOptions'
 import { drawHorizontalLine, drawVerticalLine, getFont, drawLine } from '../utils/canvas'
 import { formatPrecision, formatValue } from '../utils/format'
-import { IogoData } from '../data/ChartData'
+import { IogoData,labeledLine } from '../data/ChartData'
 var imgObj=new Image();
 export default class CandleStickView extends TechnicalIndicatorView {
   _draw () {
@@ -30,8 +30,9 @@ export default class CandleStickView extends TechnicalIndicatorView {
       this._drawLowestPriceMark()
     }
     this._drawLastPriceLine()
+    this._theHorizontalAxisPrompt();
   }
-
+  
   /**
    * 绘制分时图
    * @private
@@ -224,7 +225,7 @@ export default class CandleStickView extends TechnicalIndicatorView {
   }
 
   /**
-   * 绘制最新价线
+   * 绘制最新价线 a
    * @private
    */
   _drawLastPriceLine () {
@@ -258,4 +259,28 @@ export default class CandleStickView extends TechnicalIndicatorView {
     drawHorizontalLine(this._ctx, priceY, 0, this._width)
     this._ctx.restore()
   }
+
+  /**
+   * 绘制标记线
+   * @private
+   */
+  _theHorizontalAxisPrompt () {
+    if(labeledLine && labeledLine.length && labeledLine.length>=1){
+      labeledLine.forEach(item=>{
+        let close = item.value;
+        let priceY = this._yAxis.convertToPixel(close)
+        priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
+        let priceMarkLine = item.lineStyle;
+        this._ctx.save()
+        this._ctx.strokeStyle = item.lineStyle.color;
+        this._ctx.lineWidth = priceMarkLine.size
+        if (priceMarkLine.style === LineStyle.DASH) {
+          this._ctx.setLineDash(priceMarkLine.dashValue)
+        }
+        drawHorizontalLine(this._ctx, priceY, 0, this._width)
+        this._ctx.restore()
+      })
+    }
+  }
+
 }
