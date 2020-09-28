@@ -169,11 +169,11 @@ export function triggerPunctuationClick (event) {
     let x1 = x + w;
     let useX = x;
     let useX1 = x;
-    if(event.pageX>x && event.pageX<x1 && event.pageY>y && event.pageY<y1){
+    if(event.localX>x && event.localX<x1 && event.localY>y && event.localY<y1){
       labeledLineMatchingData.item.boxStyle.item.forEach(data=>{
         useX1 += data.width;
         if(data.clickable){
-          if(event.pageX>useX && event.pageX<useX1 && event.pageY>y && event.pageY<y1){
+          if(event.localX>useX && event.localX<useX1 && event.localY>y && event.localY<y1){
             labeledLineMatchingData.item.agentClick(data,labeledLineMatchingData);
           }
         }
