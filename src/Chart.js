@@ -180,6 +180,13 @@ export default class Chart {
   deleteLabeledLine (id){
     deleteItionLabeledLine(id);
   }
+
+  /**
+   * 刷新页面视图
+   */
+  refreshTheView(){
+    this._chartPane._calcAllPaneTechnicalIndicator()
+  }
   
   /**
    * 添加历史更多数据
