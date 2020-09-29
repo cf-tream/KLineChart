@@ -249,8 +249,8 @@ export default class TechnicalIndicatorFloatLayerView extends View {
           
           labeledLineMatchingData.item.boxStyle.item.forEach(item=>{
             if(item.type=="text"){
-              this._ctx.fillRect(useX,y,item.width,item.height); 
               this._ctx.fillStyle=item.background;
+              this._ctx.fillRect(useX,y,item.width,item.height); 
               this._ctx.fill();
               this._ctx.closePath();
               //开始一个新的绘制路径

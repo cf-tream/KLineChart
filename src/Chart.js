@@ -14,7 +14,7 @@
 
 import ChartPane, { CANDLE_STICK_PANE_TAG } from './pane/ChartPane'
 import { isArray, clone } from './utils/typeChecks'
-import { GraphicMarkType,modifyLogoData,additionLabeledLine,modifyItionLabeledLine,deleteItionLabeledLine  } from './data/ChartData'
+import { GraphicMarkType,modifyLogoData,additionLabeledLine,modifyItionLabeledLine,deleteItionLabeledLine,emptyItionLabeledLine } from './data/ChartData'
 import { DEV } from './utils/env'
 
 export default class Chart {
@@ -181,6 +181,12 @@ export default class Chart {
     deleteItionLabeledLine(id);
   }
 
+  /**
+   * 清空 横轴标记线
+   */
+  emptyLabeledLine(){
+    emptyItionLabeledLine();
+  }
   /**
    * 刷新页面视图
    */

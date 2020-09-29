@@ -21,7 +21,6 @@ import { DEV } from '../utils/env'
 import { TechnicalIndicatorSeries } from './technicalindicator/TechnicalIndicator'
 import Delegate from './delegate/Delegate'
 var timer=null;
-
 // 标记线的数据
 export var labeledLine=[];
 // 样式手型打开
@@ -151,6 +150,11 @@ export function deleteItionLabeledLine(id){
   labeledLineMatching=false;
   labeledLineMatchingData={};
   cursorPointer=false;
+}
+
+// 清空横轴标记线
+export function emptyItionLabeledLine(){
+  labeledLine=[];
 }
 
 /**
