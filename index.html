@@ -187,7 +187,7 @@
             }
         };
         kLineChart.addLabeledLine(axisData);
-        kLineChart.updateData({...Kdata[Kdata.length-1]})
+        kLineChart.refreshTheView();
         
         function agentTrigger(item,data){
             console.log(item);
@@ -350,7 +350,7 @@
             }
         };
         kLineChart.addLabeledLine(axisData);
-        kLineChart.updateData({...Kdata[Kdata.length-1]})
+        kLineChart.refreshTheView();
         }
 
         
