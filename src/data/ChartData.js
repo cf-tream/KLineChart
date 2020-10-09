@@ -97,23 +97,35 @@ export function additionLabeledLine(data){
 
 // 修改横轴标记线
 export function modifyItionLabeledLine(id,data){
+  let current=false;
+  if (labeledLineMatchingData.item && (labeledLineMatchingData.item.id == id || labeledLineMatchingData.item.data.PId == id)) {
+    current = true;
+  }
   labeledLine.forEach(item=>{
-    if(item.id==id){
+    if(item.id==id || item.data.PId==id){
       data.forEach(info=>{
-        if(info.name=='main'){
+        if(info.name=='data'){
+          item.data=info.data;
+        }else if(info.name=='main'){
           for(let i in info){
             item[i]=info[i];
-            labeledLineMatchingData.item[i]=info[i];
+            if(current){
+              labeledLineMatchingData.item[i]=info[i];
+            }
           }
         }else if(info.name=="lineStyle"){
           for(let i in info){
             item.lineStyle[i]=info[i];
-            labeledLineMatchingData.item.lineStyle[i]=info[i];
+            if(current){
+              labeledLineMatchingData.item.lineStyle[i]=info[i];
+            }
           }
         }else if(info.name=="textStyle"){
           for(let i in info){
             item.textStyle[i]=info[i];
-            labeledLineMatchingData.item.textStyle[i]=info[i];
+            if(current){
+              labeledLineMatchingData.item.textStyle[i]=info[i];
+            }
           }
         }else if(info.name=="boxStyle"){
           for(let i in info){
@@ -123,21 +135,26 @@ export function modifyItionLabeledLine(id,data){
                   if(li.name==outer.name){
                     for(let L in li){
                       outer[L]=li[L];
-                      let hold=labeledLineMatchingData.item.boxStyle.item[index];
-                      hold[L]=li[L];
+                      if(current){
+                        let hold=labeledLineMatchingData.item.boxStyle.item[index];
+                        hold[L]=li[L];
+                      }
                     }
                   }
                 })
               })
             }else{
               item.boxStyle[i]=info[i];
-              labeledLineMatchingData.item.boxStyle[i]=info[i];
+              if(current){
+                labeledLineMatchingData.item.boxStyle[i]=info[i];
+              }
             }
           }
         }
       })
     }
   })
+  console.log(labeledLine);
 }
 
 // 删除横轴标记线
