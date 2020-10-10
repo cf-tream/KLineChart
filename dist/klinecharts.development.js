@@ -7,7 +7,7 @@
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
-(global = global || self, factory(global.klinecharts = {}));
+(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.klinecharts = {}));
 }(this, (function (exports) { 'use strict';
 
 function _typeof(obj) {
@@ -160,7 +160,7 @@ function _possibleConstructorReturn(self, call) {
 function _createSuper(Derived) {
   var hasNativeReflectConstruct = _isNativeReflectConstruct();
 
-  return function () {
+  return function _createSuperInternal() {
     var Super = _getPrototypeOf(Derived),
         result;
 
@@ -223,9 +223,12 @@ function _arrayLikeToArray(arr, len) {
   return arr2;
 }
 
-function _createForOfIteratorHelper(o) {
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+
   if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
-    if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+      if (it) o = it;
       var i = 0;
 
       var F = function () {};
@@ -251,8 +254,7 @@ function _createForOfIteratorHelper(o) {
     throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  var it,
-      normalCompletion = true,
+  var normalCompletion = true,
       didErr = false,
       err;
   return {
@@ -3064,6 +3066,27 @@ var Delegate = /*#__PURE__*/function () {
   return Delegate;
 }();
 
+var timer = null;
+var yAxis1 = null; // 标记线的数据
+
+var labeledLine = []; // 标记线的id名
+
+var labeledLineIdName = null; // 样式手型打开
+
+var cursorPointer = false; // 样式改变的元素高度
+
+var masterMapHeight = 0; // 是否还在运动
+
+var isStillMoving = false; // 减速中的数值 
+
+var decelerationValues = 0; // 移动的坐标轴
+var IogoData = {
+  width: 100,
+  height: 100,
+  x: 0,
+  y: 0,
+  imgUrl: ''
+};
 var InvalidateLevel = {
   NONE: 0,
   GRAPHIC_MARK: 1,
@@ -3093,6 +3116,134 @@ var DrawActionType = {
 };
 var MAX_DATA_SPACE = 50;
 var MIN_DATA_SPACE = 3;
+function modifyLogoData(data) {
+  IogoData = data;
+} // 添加标记线数据
+
+function additionLabeledLine(data, idName) {
+  // 生产不重复的id
+  var id = Number(Math.random().toString().substr(3, 12) + Date.now()).toString(36);
+  data.id = id;
+  labeledLineIdName = idName;
+  labeledLine.push(_objectSpread2({}, data));
+} // 修改横轴标记线
+
+function modifyItionLabeledLine(id, data) {
+  console.log('------------------------');
+  labeledLine.forEach(function (item) {
+    console.log(id);
+    console.log(item.data[labeledLineIdName]);
+    console.log(item.data);
+
+    if (item.id == id || item.data[labeledLineIdName] == id) {
+      data.forEach(function (info) {
+        if (info.name == 'data') {
+          item.data = info.data;
+        } else if (info.name == 'main') {
+          for (var i in info) {
+            item[i] = info[i];
+          }
+        } else if (info.name == "lineStyle") {
+          for (var _i in info) {
+            item.lineStyle[_i] = info[_i];
+          }
+        } else if (info.name == "textStyle") {
+          for (var _i2 in info) {
+            item.textStyle[_i2] = info[_i2];
+          }
+        } else if (info.name == "boxStyle") {
+          for (var _i3 in info) {
+            if (_i3 == 'item') {
+              item.boxStyle.item.forEach(function (outer, index) {
+                info.item.forEach(function (li) {
+                  if (li.name == outer.name) {
+                    for (var L in li) {
+                      outer[L] = li[L];
+                    }
+                  }
+                });
+              });
+            } else {
+              item.boxStyle[_i3] = info[_i3];
+            }
+          }
+        }
+      });
+    }
+  });
+} // 删除横轴标记线
+
+function deleteItionLabeledLine(id) {
+  labeledLine.forEach(function (item, index) {
+    if (item.id == id || item.data[labeledLineIdName] == id) {
+      labeledLine.splice(index, 1);
+    }
+  });
+  cursorPointer = false;
+} // 清空横轴标记线
+
+function emptyItionLabeledLine() {
+  labeledLine = [];
+}
+/**
+ * 点击触发是否点了标点线的按钮
+ */
+
+function triggerPunctuationClick(event) {
+  var selected = false;
+  var itemValue = null;
+  var indexValue = null;
+  var useX = null;
+  var useX1 = null;
+  var useY = null;
+  var useY1 = null;
+  labeledLine.forEach(function (item, index) {
+    var w = item.boxStyle.width;
+    var h = item.boxStyle.height;
+    var priceY = yAxis1.convertToPixel(item.value); // 定义canvas画笔的x坐标点
+
+    var x = item.shaftX; // 定义canvas画笔的y坐标点
+
+    var y = priceY - h / 2;
+    var y1 = y + h;
+
+    if (x > w) {
+      x = x - w;
+    }
+
+    var x1 = x + w;
+
+    if (event.localX > x && event.localX < x1 && event.localY > y && event.localY < y1) {
+      if (labeledLine[index].id == labeledLine[labeledLine.length - 1].id) {
+        selected = true;
+        indexValue = index;
+        itemValue = item;
+        useX = x;
+        useX1 = x;
+        useY = y;
+        useY1 = y1;
+      }
+    }
+  });
+
+  if (selected) {
+    itemValue.boxStyle.item.forEach(function (data) {
+      useX1 += data.width;
+
+      if (data.clickable) {
+        if (event.localX > useX && event.localX < useX1 && event.localY > useY && event.localY < useY1) {
+          console.log(labeledLine);
+          labeledLine[indexValue].agentClick(data, itemValue);
+        }
+      }
+
+      useX += data.width;
+    });
+  }
+}
+function masterMapHeightAlter(data) {
+  masterMapHeight = data;
+}
 
 var ChartData = /*#__PURE__*/function () {
   function ChartData(styleOptions, invalidateHandler) {
@@ -3185,7 +3336,13 @@ var ChartData = /*#__PURE__*/function () {
       fibonacciLine: []
     }; // 绘制事件代理
 
-    this._drawActionDelegate = (_this$_drawActionDele = {}, _defineProperty(_this$_drawActionDele, DrawActionType.DRAW_CANDLE, new Delegate()), _defineProperty(_this$_drawActionDele, DrawActionType.DRAW_TECHNICAL_INDICATOR, new Delegate()), _this$_drawActionDele);
+    this._drawActionDelegate = (_this$_drawActionDele = {}, _defineProperty(_this$_drawActionDele, DrawActionType.DRAW_CANDLE, new Delegate()), _defineProperty(_this$_drawActionDele, DrawActionType.DRAW_TECHNICAL_INDICATOR, new Delegate()), _this$_drawActionDele); // 移动的y值
+
+    this.priceY = 0; // 触发的值
+
+    this.triggerValue = 0; // 是否找到值
+
+    this.findValue = false;
   }
   /**
    * 加载更多持有者
@@ -3234,6 +3391,11 @@ var ChartData = /*#__PURE__*/function () {
       this._dataSpace = dataSpace;
       this._barSpace = this._calcBarSpace();
       return true;
+    }
+  }, {
+    key: "storeYAxis",
+    value: function storeYAxis(yAxis) {
+      yAxis1 = yAxis;
     }
     /**
      * 获取样式配置
@@ -3639,13 +3801,28 @@ var ChartData = /*#__PURE__*/function () {
       this._preOffsetRightBarCount = this._offsetRightBarCount;
     }
     /**
-     * 滚动
+     * 滚动  3 distance改变这个可以改变运动
      * @param distance
      */
 
   }, {
     key: "scroll",
-    value: function scroll(distance) {
+    value: function scroll(distance, move) {
+      var _this = this;
+
+      if (move && move >= 2 || move <= -2) {
+        isStillMoving = true;
+        clearTimeout(timer);
+        timer = setInterval(function () {
+          _this.scroll(distance + move, move *= 0.95);
+
+          decelerationValues = distance + move;
+        }, 15);
+      } else {
+        isStillMoving = false;
+        clearTimeout(timer);
+      }
+
       var distanceBarCount = distance / this._dataSpace;
       this._offsetRightBarCount = this._preOffsetRightBarCount - distanceBarCount;
       this.adjustOffsetBarCount();
@@ -3873,6 +4050,62 @@ var ChartData = /*#__PURE__*/function () {
     key: "drawActionDelegate",
     value: function drawActionDelegate(type) {
       return this._drawActionDelegate[type];
+    }
+    /**
+     * 移动判断提示框是否移动到了提示框上
+     */
+
+  }, {
+    key: "getLabeledLine",
+    value: function getLabeledLine(yAxis, event) {
+      var selected = true;
+      var selectedOther = false;
+      var itemData = null;
+      var indexValue = null;
+      var cursor = false;
+      labeledLine.forEach(function (item, index) {
+        var w = item.boxStyle.width;
+        var h = item.boxStyle.height;
+        var priceY = yAxis.convertToPixel(item.value); // 定义canvas画笔的x坐标点
+
+        var x = item.shaftX; // 定义canvas画笔的y坐标点
+
+        var y = priceY - h / 2;
+        var y1 = y + h;
+
+        if (x > w) {
+          x = x - w;
+        }
+
+        var x1 = x + w;
+
+        if (event.localX > x && event.localX < x1 && event.localY > y && event.localY < y1) {
+          cursor = true;
+
+          if (labeledLine[index].id == labeledLine[labeledLine.length - 1].id) {
+            selected = false;
+          }
+
+          if (labeledLine[index].id != labeledLine[labeledLine.length - 1].id) {
+            selectedOther = true;
+            itemData = item;
+            indexValue = index;
+          }
+        }
+      });
+
+      if (cursor) {
+        cursorPointer = true;
+      } else {
+        cursorPointer = false;
+      }
+
+      if (selected && selectedOther) {
+        labeledLine.push(_objectSpread2({}, itemData));
+        labeledLine.splice(indexValue, 1);
+
+        this._invalidateHandler();
+      }
     }
   }]);
 
@@ -5295,6 +5528,8 @@ var YAxisView = /*#__PURE__*/function (_View) {
         this._drawTechnicalIndicatorLastValue(yAxisOptions);
 
         this._drawLastPriceLabel(yAxisOptions);
+
+        this._theHorizontalAxisPromptText(yAxisOptions);
       }
     }
   }, {
@@ -5481,7 +5716,7 @@ var YAxisView = /*#__PURE__*/function (_View) {
       });
     }
     /**
-     * 绘制最新价文字
+     * 绘制最新价文字 d
      * @private
      */
 
@@ -5520,6 +5755,25 @@ var YAxisView = /*#__PURE__*/function (_View) {
       var priceMarkText = lastPriceMark.text;
 
       this._drawMarkLabel(yAxisOptions, close, this._chartData.pricePrecision(), priceMarkText.size, priceMarkText.weight, priceMarkText.family, priceMarkText.color, backgroundColor, priceMarkText.paddingLeft, priceMarkText.paddingTop, priceMarkText.paddingRight, priceMarkText.paddingBottom);
+    }
+    /**
+     * 绘制标记线的文字
+     * 
+     */
+
+  }, {
+    key: "_theHorizontalAxisPromptText",
+    value: function _theHorizontalAxisPromptText(yAxisOptions) {
+      var _this5 = this;
+
+      if (masterMapHeight == this._ctx.canvas.height) {
+        var textStyle = {};
+        labeledLine.forEach(function (item) {
+          textStyle = item.textStyle;
+
+          _this5._drawMarkLabel(yAxisOptions, item.value, 2, textStyle.size, textStyle.weight, textStyle.family, textStyle.color, textStyle.background, textStyle.paddingLeft, textStyle.paddingTop, textStyle.paddingRight, textStyle.paddingBottom);
+        });
+      }
     }
     /**
      * 绘制标记label
@@ -6390,6 +6644,8 @@ var TechnicalIndicatorPane = /*#__PURE__*/function (_Pane) {
   return TechnicalIndicatorPane;
 }(Pane);
 
+var imgObj = new Image();
+
 var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
   _inherits(CandleStickView, _TechnicalIndicatorVi);
 
@@ -6419,6 +6675,10 @@ var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
       }
 
       this._drawLastPriceLine();
+
+      this._theHorizontalAxisPrompt();
+
+      this._theHorizontalTooltip();
     }
     /**
      * 绘制分时图
@@ -6574,6 +6834,12 @@ var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
     value: function _drawCandleStick() {
       var _this2 = this;
 
+      imgObj.src = IogoData.imgUrl;
+
+      if (imgObj.src != '') {
+        this._ctx.drawImage(imgObj, (this._ctx.canvas.width - IogoData.width / 2) * IogoData.x, (this._ctx.canvas.height - IogoData.height / 2) * IogoData.y, IogoData.width, IogoData.height);
+      }
+
       var candleStickOptions = this._chartData.styleOptions().candleStick;
 
       this._drawGraphics(function (x, i, kLineData, halfBarSpace, barSpace) {
@@ -6706,7 +6972,7 @@ var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
       this._ctx.fillText(text, startX + 5 + priceMarkOptions.textMargin, y);
     }
     /**
-     * 绘制最新价线
+     * 绘制最新价线 a
      * @private
      */
 
@@ -6756,6 +7022,179 @@ var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
       drawHorizontalLine(this._ctx, priceY, 0, this._width);
 
       this._ctx.restore();
+    }
+    /**
+     * 绘制标记线
+     * @private
+     */
+
+  }, {
+    key: "_theHorizontalAxisPrompt",
+    value: function _theHorizontalAxisPrompt() {
+      var _this4 = this;
+
+      masterMapHeightAlter(this._ctx.canvas.height);
+
+      if (labeledLine && labeledLine.length && labeledLine.length >= 1) {
+        labeledLine.forEach(function (item) {
+          var close = item.value;
+
+          var priceY = _this4._yAxis.convertToPixel(close);
+
+          priceY = +Math.max(_this4._height * 0.05, Math.min(priceY, _this4._height * 0.98)).toFixed(0);
+          var priceMarkLine = item.lineStyle;
+
+          _this4._ctx.save();
+
+          _this4._ctx.strokeStyle = item.lineStyle.color;
+          _this4._ctx.lineWidth = priceMarkLine.size;
+
+          if (priceMarkLine.style === LineStyle.DASH) {
+            _this4._ctx.setLineDash(priceMarkLine.dashValue);
+          }
+
+          drawHorizontalLine(_this4._ctx, priceY, 0, _this4._width);
+
+          _this4._ctx.restore();
+        });
+      }
+    }
+    /**
+    * 绘制提示框
+    * labeledLine
+    */
+
+  }, {
+    key: "_theHorizontalTooltip",
+    value: function _theHorizontalTooltip() {
+      var _this5 = this;
+
+      if (masterMapHeight == this._ctx.canvas.height) {
+        this._chartData.storeYAxis(this._yAxis);
+
+        labeledLine.forEach(function (data) {
+          // 提示框的宽度
+          var w = data.boxStyle.width; // 提示框的高度======》画布高度-下放三角箭头的高度
+
+          var h = data.boxStyle.height;
+          var close = data.value;
+
+          var priceY = _this5._yAxis.convertToPixel(close);
+
+          priceY = +Math.max(_this5._height * 0.05, Math.min(priceY, _this5._height * 0.98)).toFixed(0); // 定义canvas画笔的x坐标点
+
+          var x = data.shaftX; // 定义canvas画笔的y坐标点
+
+          var y = priceY - h / 2; // 定义圆角的半径
+
+          var r = data.boxStyle.borderRadius; // 缩放
+
+          _this5._ctx.scale(1, 1); // 开始
+
+
+          _this5._ctx.beginPath();
+
+          _this5._ctx.moveTo(x + r, y);
+
+          _this5._ctx.arcTo(x + w, y, x + w, y + h, r);
+
+          _this5._ctx.arcTo(x + w, y + h, x, y + h, r);
+
+          _this5._ctx.arcTo(x, y + h, x, y, r);
+
+          _this5._ctx.arcTo(x, y, x + w, y, r);
+
+          _this5._ctx.stroke(); // 设置阴影
+
+
+          _this5._ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'; // 颜色
+
+          _this5._ctx.shadowBlur = 5; // 模糊尺寸
+
+          _this5._ctx.shadowOffsetX = 2; // 阴影Y轴偏移
+
+          _this5._ctx.shadowOffsetY = 2; // 阴影X轴偏移
+          // 文字提示框的颜色
+
+          _this5._ctx.strokeStyle = data.boxStyle.borderColor;
+          _this5._ctx.lineWidth = data.boxStyle.borderLine; //沿着坐标点顺序的路径绘制直线
+
+          _this5._ctx.stroke(); // 关闭,形成一个闭合的回路---->轮廓
+
+
+          _this5._ctx.closePath(); // 填充
+          // this._ctx.fill();
+
+
+          var useX = x;
+          data.boxStyle.item.forEach(function (item) {
+            if (item.type == "text") {
+              _this5._ctx.fillStyle = item.background;
+
+              _this5._ctx.fillRect(useX, y, item.width, item.height);
+
+              _this5._ctx.fill();
+
+              _this5._ctx.closePath(); //开始一个新的绘制路径
+
+
+              _this5._ctx.beginPath();
+
+              _this5._ctx.strokeStyle = item.borderColor;
+              _this5._ctx.lineWidth = item.borderLine;
+
+              _this5._ctx.moveTo(useX, y);
+
+              _this5._ctx.lineTo(useX, y + item.height);
+
+              _this5._ctx.font = item.font;
+              _this5._ctx.fillStyle = item.color;
+
+              _this5._ctx.fillText(item.text, useX + item.textOffsetLeft, y + item.textOffsetTop, item.width); //沿着坐标点顺序的路径绘制直线
+
+
+              _this5._ctx.stroke(); //关闭当前的绘制路径
+
+
+              _this5._ctx.closePath();
+            } else if (item.type == "img") {
+              _this5._ctx.fillRect(useX, y, item.width, item.height);
+
+              _this5._ctx.fillStyle = item.background;
+
+              _this5._ctx.fill();
+
+              _this5._ctx.closePath(); //开始一个新的绘制路径
+
+
+              _this5._ctx.beginPath();
+
+              _this5._ctx.strokeStyle = item.borderColor;
+              _this5._ctx.lineWidth = item.borderLine;
+
+              _this5._ctx.moveTo(useX, y);
+
+              _this5._ctx.lineTo(useX, y + item.height); //沿着坐标点顺序的路径绘制直线
+
+
+              _this5._ctx.stroke();
+
+              var _imgObj = new Image();
+
+              _imgObj.src = item.url;
+
+              if (_imgObj.src != '') {
+                _this5._ctx.drawImage(_imgObj, useX + item.textOffsetLeft, y + item.textOffsetTop, item.imgWidth, item.imgHeight);
+              } //关闭当前的绘制路径
+
+
+              _this5._ctx.closePath();
+            }
+
+            useX += item.width;
+          });
+        });
+      }
     }
   }]);
 
@@ -7737,10 +8176,10 @@ var EventBase = /*#__PURE__*/function () {
         };
 
         rootElement.addEventListener('touchmove', boundMouseMoveWithDownHandler, {
-          passive: false
+          passive: true
         });
         rootElement.addEventListener('touchend', boundMouseUpHandler, {
-          passive: false
+          passive: true
         });
 
         this._clearLongTapTimeout();
@@ -7814,7 +8253,7 @@ var EventBase = /*#__PURE__*/function () {
 
 
       this._target.addEventListener('touchmove', function () {}, {
-        passive: false
+        passive: true
       });
     }
   }, {
@@ -7846,7 +8285,7 @@ var EventBase = /*#__PURE__*/function () {
           preventDefault(event);
         }
       }, {
-        passive: false
+        passive: true
       });
 
       this._target.addEventListener('touchend', function (event) {
@@ -10118,12 +10557,14 @@ var SeparatorPane = /*#__PURE__*/function () {
   return SeparatorPane;
 }();
 
+var distanceA = 0;
+
 var ZoomScrollEventHandler = /*#__PURE__*/function (_EventHandler) {
   _inherits(ZoomScrollEventHandler, _EventHandler);
 
   var _super = _createSuper(ZoomScrollEventHandler);
 
-  function ZoomScrollEventHandler(chartData) {
+  function ZoomScrollEventHandler(chartData, yAxis) {
     var _this;
 
     _classCallCheck(this, ZoomScrollEventHandler);
@@ -10139,6 +10580,7 @@ var ZoomScrollEventHandler = /*#__PURE__*/function (_EventHandler) {
     _this._touchZoomed = false; // 用来记录捏合缩放的尺寸
 
     _this._pinchScale = 1;
+    _this._yAxis = yAxis;
     return _this;
   }
 
@@ -10180,6 +10622,16 @@ var ZoomScrollEventHandler = /*#__PURE__*/function (_EventHandler) {
       }, function () {
         _this2._chartData.setCrossHairPointPaneTag(null, null);
       });
+    } // 判断此条线是否到达标记线中
+
+  }, {
+    key: "mouseMoveLabeledLine",
+    value: function mouseMoveLabeledLine(event) {
+      if (!isMouse(event)) {
+        return;
+      }
+
+      this._chartData.getLabeledLine(this._yAxis, event);
     }
   }, {
     key: "mouseWheelEvent",
@@ -10277,7 +10729,8 @@ var ZoomScrollEventHandler = /*#__PURE__*/function (_EventHandler) {
           _this4._touchCancelCrossHair = false;
         }
       });
-    }
+    } // 按下鼠标移动事件  2
+
   }, {
     key: "pressedMouseMoveEvent",
     value: function pressedMouseMoveEvent(event) {
@@ -10300,9 +10753,11 @@ var ZoomScrollEventHandler = /*#__PURE__*/function (_EventHandler) {
 
             return;
           }
-        }
+        } // event.localX 移动的坐标轴        this._startScrollPoint.x 鼠标按下的坐标轴
+
 
         var distance = event.localX - _this5._startScrollPoint.x;
+        distanceA = event.localX - _this5._startScrollPoint.x;
 
         _this5._chartData.setCrossHairPointPaneTag(crossHairPoint, cross.tag);
 
@@ -10445,6 +10900,9 @@ var KeyBoardEventHandler = /*#__PURE__*/function (_EventHandler) {
   return KeyBoardEventHandler;
 }(EventHandler);
 
+var iSpeedX = 0;
+var lastX = 0;
+
 var ChartEvent = /*#__PURE__*/function () {
   function ChartEvent(target, chartData, xAxis, yAxis) {
     _classCallCheck(this, ChartEvent);
@@ -10478,7 +10936,7 @@ var ChartEvent = /*#__PURE__*/function () {
 
     this._target.addEventListener('contextmenu', this._boundContextMenuEvent, false);
 
-    this._zoomScrollEventHandler = new ZoomScrollEventHandler(chartData);
+    this._zoomScrollEventHandler = new ZoomScrollEventHandler(chartData, yAxis);
     this._graphicMarkEventHandler = new GraphicMarkEventHandler(chartData, xAxis, yAxis);
     this._keyBoardEventHandler = new KeyBoardEventHandler(chartData);
   }
@@ -10497,14 +10955,24 @@ var ChartEvent = /*#__PURE__*/function () {
     key: "_pinchEvent",
     value: function _pinchEvent(middlePoint, scale) {
       this._zoomScrollEventHandler.pinchEvent(middlePoint, scale);
-    }
+    } // 鼠标抬起事件
+
   }, {
     key: "_mouseUpEvent",
     value: function _mouseUpEvent(event) {
-      this._target.style.cursor = 'crosshair';
+      if (cursorPointer) {
+        this._target.style.cursor = 'pointer';
+      } else {
+        this._target.style.cursor = 'crosshair';
+      }
+
       event.localX -= this._chartContentSize.contentLeft;
 
       this._graphicMarkEventHandler.mouseUpEvent(event);
+
+      if (iSpeedX > 5 || iSpeedX < -5) {
+        this._chartData.scroll(distanceA, iSpeedX);
+      }
     }
   }, {
     key: "_mouseLeaveEvent",
@@ -10514,10 +10982,17 @@ var ChartEvent = /*#__PURE__*/function () {
 
         this._zoomScrollEventHandler.mouseLeaveEvent(event);
       }
-    }
+    } // 鼠标移动事件
+
   }, {
     key: "_mouseMoveEvent",
     value: function _mouseMoveEvent(event) {
+      if (cursorPointer) {
+        this._target.style.cursor = 'pointer';
+      } else {
+        this._target.style.cursor = 'crosshair';
+      }
+
       event.localX -= this._chartContentSize.contentLeft;
 
       if (this._chartData.shouldInvalidateGraphicMark()) {
@@ -10526,6 +11001,8 @@ var ChartEvent = /*#__PURE__*/function () {
 
       if (this._checkZoomScroll()) {
         this._zoomScrollEventHandler.mouseMoveEvent(event);
+
+        this._zoomScrollEventHandler.mouseMoveLabeledLine(event);
       }
     }
   }, {
@@ -10543,10 +11020,19 @@ var ChartEvent = /*#__PURE__*/function () {
 
         this._zoomScrollEventHandler.mouseClickEvent(event);
       }
-    }
+    } // 鼠标点击事件
+
   }, {
     key: "_mouseDownEvent",
     value: function _mouseDownEvent(event) {
+      triggerPunctuationClick(event);
+      iSpeedX = 0;
+      lastX = 0;
+
+      if (isStillMoving) {
+        this._chartData.scroll(decelerationValues);
+      }
+
       this._target.style.cursor = 'pointer';
       event.localX -= this._chartContentSize.contentLeft;
 
@@ -10562,10 +11048,18 @@ var ChartEvent = /*#__PURE__*/function () {
       event.localX -= this._chartContentSize.contentLeft;
 
       this._graphicMarkEventHandler.mouseRightDownEvent(event);
-    }
+    } // 鼠标拖动事件  1
+
   }, {
     key: "_pressedMouseMoveEvent",
     value: function _pressedMouseMoveEvent(event) {
+      iSpeedX = event.clientX - lastX;
+      lastX = event.clientX;
+
+      if (iSpeedX == lastX) {
+        iSpeedX = 0;
+      }
+
       event.localX -= this._chartContentSize.contentLeft;
 
       if (this._chartData.dragGraphicMarkFlag()) {
@@ -11584,6 +12078,60 @@ var Chart = /*#__PURE__*/function () {
     key: "applyNewData",
     value: function applyNewData(dataList, more) {
       this._chartPane.applyNewData(dataList, more);
+    }
+    /**
+     * 添加Logo
+     */
+
+  }, {
+    key: "setLogoData",
+    value: function setLogoData(data) {
+      modifyLogoData(data);
+    }
+    /**
+     * 添加 横轴标记线
+     */
+
+  }, {
+    key: "addLabeledLine",
+    value: function addLabeledLine(data, idName) {
+      additionLabeledLine(data, idName);
+    }
+    /**
+     * 修改 横轴标记线
+     */
+
+  }, {
+    key: "modifyLabeledLine",
+    value: function modifyLabeledLine(id, data) {
+      modifyItionLabeledLine(id, data);
+    }
+    /**
+     * 删除 横轴标记线
+     */
+
+  }, {
+    key: "deleteLabeledLine",
+    value: function deleteLabeledLine(id) {
+      deleteItionLabeledLine(id);
+    }
+    /**
+     * 清空 横轴标记线
+     */
+
+  }, {
+    key: "emptyLabeledLine",
+    value: function emptyLabeledLine() {
+      emptyItionLabeledLine();
+    }
+    /**
+     * 刷新页面视图
+     */
+
+  }, {
+    key: "refreshTheView",
+    value: function refreshTheView() {
+      this._chartPane._calcAllPaneTechnicalIndicator();
     }
     /**
      * 添加历史更多数据

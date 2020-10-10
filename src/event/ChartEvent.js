@@ -91,6 +91,7 @@ export default class ChartEvent {
     }else{
       this._target.style.cursor = 'crosshair'
     }
+    
     event.localX -= this._chartContentSize.contentLeft
     if (this._chartData.shouldInvalidateGraphicMark()) {
       this._graphicMarkEventHandler.mouseMoveEvent(event)

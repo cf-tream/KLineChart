@@ -17,7 +17,6 @@ import { FloatLayerPromptDisplayRule, LineStyle } from '../data/options/styleOpt
 import { isValid } from '../utils/typeChecks'
 import { calcTextWidth, drawHorizontalLine, drawVerticalLine, getFont } from '../utils/canvas'
 import { getTechnicalIndicatorInfo } from '../data/technicalindicator/technicalIndicatorControl'
-import { labeledLineMatching,labeledLineMatchingData,labeledLineHoldXY,masterMapHeight} from '../data/ChartData'
 
 export default class TechnicalIndicatorFloatLayerView extends View {
   constructor (container, chartData, xAxis, yAxis, additionalDataProvider) {
@@ -50,7 +49,6 @@ export default class TechnicalIndicatorFloatLayerView extends View {
       const realDataPosX = this._xAxis.convertToPixel(realDataPos)
       this._drawCrossHairHorizontalLine(crossHair)
       this._drawCrossHairVerticalLine(crossHair, realDataPosX)
-      this._theHorizontalTooltip(crossHair)
       const displayRule = this._chartData.styleOptions().floatLayer.prompt.displayRule
       if (displayRule === FloatLayerPromptDisplayRule.ALWAYS ||
         (displayRule === FloatLayerPromptDisplayRule.FOLLOW_CROSS && crossHair.paneTag)) {
@@ -191,106 +189,6 @@ export default class TechnicalIndicatorFloatLayerView extends View {
       const textWidth = calcTextWidth(this._ctx, text)
       this._ctx.fillText(text, labelX, labelY)
       labelX += (textMarginLeft + textMarginRight + textWidth)
-    }
-  }
-
-    /**
-   * 绘制提示框
-   * @private
-   */
-  _theHorizontalTooltip () {
-    if(masterMapHeight==this._ctx.canvas.height){
-      if(labeledLineMatching && labeledLineMatchingData && labeledLineMatchingData.item){
-        // 提示框的宽度
-        let w = labeledLineMatchingData.item.boxStyle.width;
-        // 提示框的高度======》画布高度-下放三角箭头的高度
-        let h = labeledLineMatchingData.item.boxStyle.height;;
-        // 定义canvas画笔的x坐标点
-        let x = labeledLineHoldXY.x;
-        // 定义canvas画笔的y坐标点
-        let y = labeledLineHoldXY.y-h/2;
-        // 定义圆角的半径
-        let r = labeledLineMatchingData.item.boxStyle.borderRadius;
-        if(x<w){
-          x=labeledLineHoldXY.x;
-        }else{
-          x=labeledLineHoldXY.x-w;
-        }
-        if(x+w < this._ctx.canvas.width){
-          // 缩放
-          this._ctx.scale(1, 1);
-          
-          // 开始
-          this._ctx.beginPath();
-          this._ctx.moveTo(x+r, y);
-          this._ctx.arcTo(x+w, y, x+w, y+h, r);
-          this._ctx.arcTo(x+w, y+h, x, y+h, r);
-          this._ctx.arcTo(x, y+h, x, y, r);
-          this._ctx.arcTo(x, y, x+w, y, r);
-          this._ctx.stroke();
-          
-          // 设置阴影
-          this._ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'; // 颜色
-          this._ctx.shadowBlur = 5; // 模糊尺寸
-          this._ctx.shadowOffsetX = 2; // 阴影Y轴偏移
-          this._ctx.shadowOffsetY = 2; // 阴影X轴偏移
-          // 文字提示框的颜色
-          // this._ctx.fillStyle = labeledLineMatchingData.item.boxStyle.background;
-          this._ctx.strokeStyle=labeledLineMatchingData.item.boxStyle.borderColor;
-          this._ctx.lineWidth=labeledLineMatchingData.item.boxStyle.borderLine;
-          //沿着坐标点顺序的路径绘制直线
-          this._ctx.stroke();
-          // 关闭,形成一个闭合的回路---->轮廓
-          this._ctx.closePath();
-          // 填充
-          // this._ctx.fill();
-
-          let useX = x;
-          
-          labeledLineMatchingData.item.boxStyle.item.forEach(item=>{
-            if(item.type=="text"){
-              this._ctx.fillStyle=item.background;
-              this._ctx.fillRect(useX,y,item.width,item.height); 
-              this._ctx.fill();
-              this._ctx.closePath();
-              //开始一个新的绘制路径
-              this._ctx.beginPath();
-              this._ctx.strokeStyle=item.borderColor;
-              this._ctx.lineWidth=item.borderLine;
-              this._ctx.moveTo(useX, y);
-              this._ctx.lineTo(useX, y+item.height);
-              this._ctx.font = item.font;
-              this._ctx.fillStyle = item.color;
-              this._ctx.fillText(item.text,useX+item.textOffsetLeft,y+item.textOffsetTop,item.width);
-              //沿着坐标点顺序的路径绘制直线
-              this._ctx.stroke();
-              //关闭当前的绘制路径
-              this._ctx.closePath();
-            }else if(item.type=="img"){
-              this._ctx.fillRect(useX,y,item.width,item.height); 
-              this._ctx.fillStyle=item.background;
-              this._ctx.fill();
-              this._ctx.closePath();
-              //开始一个新的绘制路径
-              this._ctx.beginPath();
-              this._ctx.strokeStyle=item.borderColor;
-              this._ctx.lineWidth=item.borderLine;
-              this._ctx.moveTo(useX, y);
-              this._ctx.lineTo(useX, y+item.height);
-              //沿着坐标点顺序的路径绘制直线
-              this._ctx.stroke();
-              let imgObj= new Image();
-              imgObj.src = item.url;
-              if(imgObj.src!=''){
-                this._ctx.drawImage(imgObj, useX + item.textOffsetLeft,  y + item.textOffsetTop ,item.imgWidth,item.imgHeight);
-              }
-              //关闭当前的绘制路径
-              this._ctx.closePath();
-            }
-            useX+=item.width;
-          })
-        }
-      }
     }
   }
 }

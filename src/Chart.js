@@ -164,8 +164,8 @@ export default class Chart {
   /**
    * 添加 横轴标记线
    */
-  addLabeledLine (data){
-    additionLabeledLine(data);
+  addLabeledLine (data,idName){
+    additionLabeledLine(data,idName);
   }
   /**
    * 修改 横轴标记线

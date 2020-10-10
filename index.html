@@ -42,6 +42,7 @@
     <div>
         <div id="basic-k-line" class="k-line-chart"></div>
         <button id="button">添加</button>
+        <button id="shanchu">删除</button>
     </div>
     
     <!-- <div id="basic-k-line1" class="k-line-chart1"></div> -->
@@ -70,16 +71,159 @@
         kLineChart.applyNewData(Kdata)
         kLineChart.createTechnicalIndicator('MACD', 100);
         kLineChart.createTechnicalIndicator('BOLL', 100);
+        
+        
+        
+        // 水平轴提示
+        let axisData3={
+            // 标记线文字提示
+            tooltip:'点击红',
+            // 标记线值
+            value:50,
+            // x軸位置
+            shaftX: 80,
+            // 标记线固定
+            fixed: true,
+            data:{
+                PId: "01EDARSEEBSB5K42CPYA359TXG123",
+                name: 'number',
+                type:'text',
+                text: '0.12345',
+                color: 'red',
+                font: '14px bold 黑体',
+                background: '#fff',
+                width: 70,
+                height: 30,
+                borderLine: 1,
+                borderColor: 'red',
+                textOffsetTop: 10,
+                textOffsetLeft: 3
+            },
+            // 标记线条样式
+            lineStyle:{
+                // 标记线颜色
+                color: 'red',
+                dashValue: [3,4],
+                size: 1,
+                style: "dash"
+            },
+            // 标记文字样式
+            textStyle:{
+                color: "#000",
+                background: '#fff',
+                family: "Helvetica Neue",
+                paddingBottom: 2,
+                paddingLeft: 2,
+                paddingRight: 2,
+                paddingTop: 2,
+                size: 12,
+                weight: "normal"
+            },
+            // 出现弹框样式
+            boxStyle:{
+                width: 240,
+                height: 30,
+                background: '#fff',
+                borderLine: 1,
+                borderColor: 'red',
+                borderRadius: 2,
+                item:[
+                    {
+                        name: 'number',
+                        type:'text',
+                        text: '0.45687',
+                        color: 'red',
+                        font: '14px bold 黑体',
+                        background: '#fff',
+                        width: 70,
+                        height: 30,
+                        borderLine: 1,
+                        borderColor: 'red',
+                        textOffsetTop: 16,
+                        textOffsetLeft: 3
+                    }, {
+                        name: 'sheet',
+                        type:'text',
+                        text: '103 张',
+                        color: '#fff        ',
+                        font: '14px bold 黑体',
+                        background: 'red',
+                        width: 80,
+                        height: 30,
+                        borderLine: 1,
+                        borderColor: 'red',
+                        textOffsetTop: 16,
+                        textOffsetLeft: 5
+                    }, {
+                        name: 'amend',
+                        event: 'amend',
+                        type:'text',
+                        text: '加',
+                        color: 'red',
+                        background: '#fff',
+                        width: 30,
+                        height: 30,
+                        imgWidth: 20,
+                        imgHeight: 20,
+                        borderLine: 0,
+                        borderColor: 'red',
+                        textOffsetTop: 16,
+                        textOffsetLeft: 5,
+                        clickable:true
+                    }, {
+                        name: 'fixed',
+                        event: 'fixed',
+                        type:'text',
+                        text: '減',
+                        color: 'red',
+                        background: '#fff',
+                        width: 30,
+                        height: 30,
+                        imgWidth: 20,
+                        imgHeight: 20,
+                        borderLine: 0,
+                        borderColor: 'red',
+                        textOffsetTop: 16,
+                        textOffsetLeft: 5,
+                        clickable:true
+                    }, {
+                        name:'delete',
+                        event: 'delete',
+                        type:'text',
+                        text: '刪',
+                        color: 'red',
+                        background: '#fff',
+                        width: 30,
+                        height: 30,
+                        imgWidth: 20,
+                        imgHeight: 20,
+                        borderLine: 0,
+                        borderColor: 'red',
+                        textOffsetTop: 16,
+                        textOffsetLeft: 5,
+                        clickable:true
+                    }
+                ]
+            },
+            // 回调函数
+            agentClick(item,data){
+                agentTrigger(item,data);
+            }
+        };
+        kLineChart.addLabeledLine(axisData3,'PId');
+
         // 水平轴提示
         let axisData={
             // 标记线文字提示
             tooltip:'点击黄',
             // 标记线值
-            value:90,
+            value:55,
+            // x軸位置
+            shaftX: 50,
             // 标记线固定
             fixed: true,
             data:{
-                PId: "01EDARSEEBSB5K42CPYA359TXG",
+                PId: "01EDARSEEBSB5K42CPYA359TX234G",
                 name: 'number',
                 type:'text',
                 text: '0.12345',
@@ -133,7 +277,7 @@
                         height: 30,
                         borderLine: 1,
                         borderColor: '#62C794',
-                        textOffsetTop: 10,
+                        textOffsetTop: 16,
                         textOffsetLeft: 3
                     }, {
                         name: 'sheet',
@@ -146,13 +290,14 @@
                         height: 30,
                         borderLine: 1,
                         borderColor: '#62C794',
-                        textOffsetTop: 10,
-                        textOffsetLeft: 15
+                        textOffsetTop: 16,
+                        textOffsetLeft: 5
                     }, {
                         name: 'amend',
                         event: 'amend',
-                        type:'img',
-                        url: './screenshot/TurnOn.png',
+                        type:'text',
+                        text: '加',
+                        color: '#62C794',
                         background: '#fff',
                         width: 30,
                         height: 30,
@@ -160,14 +305,15 @@
                         imgHeight: 20,
                         borderLine: 0,
                         borderColor: '#62C794',
-                        textOffsetTop: 5,
+                        textOffsetTop: 16,
                         textOffsetLeft: 5,
                         clickable:true
                     }, {
                         name: 'fixed',
                         event: 'fixed',
-                        type:'img',
-                        url: './screenshot/fuzhi.png',
+                        type:'text',
+                        text: '減',
+                        color: '#62C794',
                         background: '#fff',
                         width: 30,
                         height: 30,
@@ -175,14 +321,15 @@
                         imgHeight: 20,
                         borderLine: 0,
                         borderColor: '#62C794',
-                        textOffsetTop: 5,
+                        textOffsetTop: 16,
                         textOffsetLeft: 5,
                         clickable:true
                     }, {
                         name:'delete',
                         event: 'delete',
-                        type:'img',
-                        url: './screenshot/baitian.png',
+                        type:'text',
+                        text: '刪',
+                        color: '#62C794',
                         background: '#fff',
                         width: 30,
                         height: 30,
@@ -190,7 +337,7 @@
                         imgHeight: 20,
                         borderLine: 0,
                         borderColor: '#62C794',
-                        textOffsetTop: 5,
+                        textOffsetTop: 16,
                         textOffsetLeft: 5,
                         clickable:true
                     }
@@ -201,34 +348,37 @@
                 agentTrigger(item,data);
             }
         };
-        kLineChart.addLabeledLine(axisData);
+        kLineChart.addLabeledLine(axisData,'PId');
+
         // 水平轴提示
         let axisData2={
             // 标记线文字提示
-            tooltip:'点击黄',
+            tooltip:'点击蓝',
             // 标记线值
-            value:95,
+            value:50,
+            // x軸位置
+            shaftX: 50,
             // 标记线固定
             fixed: true,
             data:{
-                PId: "01EDARSEEBSB5K42CPYA359TXG",
+                PId: "01EDARSEEBSB5K42CPYA359TXG345",
                 name: 'number',
                 type:'text',
                 text: '0.12345',
-                color: '#62C794',
+                color: 'blue',
                 font: '14px bold 黑体',
                 background: '#fff',
                 width: 70,
                 height: 30,
                 borderLine: 1,
-                borderColor: '#62C794',
+                borderColor: 'blue',
                 textOffsetTop: 10,
                 textOffsetLeft: 3
             },
             // 标记线条样式
             lineStyle:{
                 // 标记线颜色
-                color: '#62C794',
+                color: 'blue',
                 dashValue: [3,4],
                 size: 1,
                 style: "dash"
@@ -236,7 +386,7 @@
             // 标记文字样式
             textStyle:{
                 color: "#000",
-                background: '#62C794',
+                background: '#fff',
                 family: "Helvetica Neue",
                 paddingBottom: 2,
                 paddingLeft: 2,
@@ -251,78 +401,81 @@
                 height: 30,
                 background: '#fff',
                 borderLine: 1,
-                borderColor: '#62C794',
+                borderColor: 'blue',
                 borderRadius: 2,
                 item:[
                     {
                         name: 'number',
                         type:'text',
-                        text: '0.12345',
-                        color: '#62C794',
+                        text: '0.45687',
+                        color: 'blue',
                         font: '14px bold 黑体',
                         background: '#fff',
                         width: 70,
                         height: 30,
                         borderLine: 1,
-                        borderColor: '#62C794',
-                        textOffsetTop: 10,
+                        borderColor: 'blue',
+                        textOffsetTop: 16,
                         textOffsetLeft: 3
                     }, {
                         name: 'sheet',
                         type:'text',
-                        text: '100 张',
+                        text: '103 张',
                         color: '#fff        ',
                         font: '14px bold 黑体',
-                        background: '#62C794',
+                        background: 'blue',
                         width: 80,
                         height: 30,
                         borderLine: 1,
-                        borderColor: '#62C794',
-                        textOffsetTop: 10,
-                        textOffsetLeft: 15
+                        borderColor: 'blue',
+                        textOffsetTop: 16,
+                        textOffsetLeft: 5
                     }, {
                         name: 'amend',
                         event: 'amend',
-                        type:'img',
-                        url: './screenshot/TurnOn.png',
+                        type:'text',
+                        text: '加',
+                        color: 'blue',
                         background: '#fff',
                         width: 30,
                         height: 30,
                         imgWidth: 20,
                         imgHeight: 20,
                         borderLine: 0,
-                        borderColor: '#62C794',
-                        textOffsetTop: 5,
+                        borderColor: 'blue',
+                        textOffsetTop: 16,
                         textOffsetLeft: 5,
                         clickable:true
                     }, {
                         name: 'fixed',
                         event: 'fixed',
-                        type:'img',
-                        url: './screenshot/fuzhi.png',
+                        type:'text',
+                        text: '減',
+                        color: 'blue',
                         background: '#fff',
                         width: 30,
                         height: 30,
                         imgWidth: 20,
                         imgHeight: 20,
                         borderLine: 0,
-                        borderColor: '#62C794',
-                        textOffsetTop: 5,
+                        borderColor: 'blue',
+                        textOffsetTop: 16,
                         textOffsetLeft: 5,
                         clickable:true
                     }, {
                         name:'delete',
                         event: 'delete',
-                        type:'img',
-                        url: './screenshot/baitian.png',
+                        type:'text',
+                        text: '刪',
+                        color: 'blue',
                         background: '#fff',
                         width: 30,
                         height: 30,
                         imgWidth: 20,
                         imgHeight: 20,
                         borderLine: 0,
-                        borderColor: '#62C794',
-                        textOffsetTop: 5,
+                        borderColor: 'blue',
+                        textOffsetTop: 16,
                         textOffsetLeft: 5,
                         clickable:true
                     }
@@ -333,44 +486,55 @@
                 agentTrigger(item,data);
             }
         };
-        kLineChart.addLabeledLine(axisData2);
+        kLineChart.addLabeledLine(axisData2,'PId');
         kLineChart.refreshTheView();
-        
+
         function agentTrigger(item,data){
             if(item.event=="amend"){    //修改方法
-                // let sum=parseInt(data.item.boxStyle.item[1].text);
-                // sum++;
-                // let random= Math.random().toFixed(5);
-                // let modify=[
-                //     {
-                //         name: 'data',
-                //         data: {name:'aaa'}
-                //     },
-                //     {   // main修改主体
-                //         name:'main'
-                //     }, { // 标记线条
-                //         name: 'lineStyle',
-                //         color: 'blue'
-                //     }, { // 标记文字
-                //         name: 'textStyle',
-                //         color: 'blue'
-                //     }, {  // 弹框样式
-                //         name: 'boxStyle',
-                //         item: [
-                //             {
-                //                 name: 'number',
-                //                 text: random
-                //             }, {
-                //                 name: 'sheet',
-                //                 text: `${sum} 张`
-                //             }
-                //         ]
-                //     }
-                // ]
-                // kLineChart.modifyLabeledLine(data.item.id,modify);
-                // kLineChart.refreshTheView();
+                let sum=parseInt(data.boxStyle.item[1].text);
+                sum++;
+                let random= Math.random().toFixed(5);
+                let modify=[
+                    {
+                        name: 'data',
+                        data:{
+                            PId: "01EDARSEEBSB5K42CPYA359TX234G",
+                            name: 'number',
+                            type:'text',
+                            text: '0.12345',
+                            color: '#62C794',
+                            font: '14px bold 黑体',
+                            background: '#fff',
+                            width: 70,
+                            height: 30,
+                            borderLine: 1,
+                            borderColor: '#62C794',
+                            textOffsetTop: 10,
+                            textOffsetLeft: 3
+                        }
+                    }, {   // main修改主体
+                        name:'main'
+                    }, { // 标记线条
+                        name: 'lineStyle'
+                    }, { // 标记文字
+                        name: 'textStyle'
+                    }, {  // 弹框样式
+                        name: 'boxStyle',
+                        item: [
+                            {
+                                name: 'number',
+                                text: random
+                            }, {
+                                name: 'sheet',
+                                text: `${sum} 张`
+                            }
+                        ]
+                    }
+                ]
+                kLineChart.modifyLabeledLine(data.id,modify);
+                kLineChart.refreshTheView();
             }else if(item.event=="delete"){ //删除方法
-                kLineChart.deleteLabeledLine(data.item.id);
+                kLineChart.deleteLabeledLine(data.id);
                 kLineChart.refreshTheView();
             }
         }
@@ -384,7 +548,21 @@
             let modify=[
                 {
                     name: 'data',
-                    data: {name:'aaa'}
+                    data:{
+                        PId: "01EDARSEEBSB5K42CPYA359TX234G",
+                        name: 'number',
+                        type:'text',
+                        text: '0.12345',
+                        color: '#62C794',
+                        font: '14px bold 黑体',
+                        background: '#fff',
+                        width: 70,
+                        height: 30,
+                        borderLine: 1,
+                        borderColor: '#62C794',
+                        textOffsetTop: 10,
+                        textOffsetLeft: 3
+                    }
                 },
                 {  // 弹框样式
                     name: 'boxStyle',
@@ -397,6 +575,11 @@
                 }
             ]
             kLineChart.modifyLabeledLine(axisData.data.PId,modify);
+            kLineChart.refreshTheView();
+        }
+        let shanchu=document.getElementById('shanchu');
+        shanchu.onclick=()=>{
+            kLineChart.deleteLabeledLine(axisData.data.PId);
             kLineChart.refreshTheView();
         }
 

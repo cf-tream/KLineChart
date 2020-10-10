@@ -21,19 +21,16 @@ import { DEV } from '../utils/env'
 import { TechnicalIndicatorSeries } from './technicalindicator/TechnicalIndicator'
 import Delegate from './delegate/Delegate'
 var timer=null;
+var yAxis1=null;
 // 标记线的数据
 export var labeledLine=[];
+// 标记线的id名
+var labeledLineIdName=null;
 // 样式手型打开
 export var cursorPointer=false;
 
 // 样式改变的元素高度
 export var masterMapHeight=0;
-// 标记线是否匹配
-export var labeledLineMatching=false;
-// 标记线匹配的数据
-export var labeledLineMatchingData={};
-// 暂存的标记线的XY轴数据
-export var labeledLineHoldXY=null;
 
 // 是否还在运动
 export var isStillMoving=false;
@@ -88,44 +85,32 @@ export function modifyLogoData(data){
 }
 
 // 添加标记线数据
-export function additionLabeledLine(data){
+export function additionLabeledLine(data,idName){
   // 生产不重复的id
   let id=Number(Math.random().toString().substr(3,12) + Date.now()).toString(36);
   data.id=id;
+  labeledLineIdName=idName;
   labeledLine.push({...data});
 }
 
 // 修改横轴标记线
 export function modifyItionLabeledLine(id,data){
-  let current=false;
-  if (labeledLineMatchingData.item && (labeledLineMatchingData.item.id == id || labeledLineMatchingData.item.data.PId == id)) {
-    current = true;
-  }
   labeledLine.forEach(item=>{
-    if(item.id==id || item.data.PId==id){
+    if(item.id==id || item.data[labeledLineIdName]==id){
       data.forEach(info=>{
         if(info.name=='data'){
           item.data=info.data;
         }else if(info.name=='main'){
           for(let i in info){
             item[i]=info[i];
-            if(current){
-              labeledLineMatchingData.item[i]=info[i];
-            }
           }
         }else if(info.name=="lineStyle"){
           for(let i in info){
             item.lineStyle[i]=info[i];
-            if(current){
-              labeledLineMatchingData.item.lineStyle[i]=info[i];
-            }
           }
         }else if(info.name=="textStyle"){
           for(let i in info){
             item.textStyle[i]=info[i];
-            if(current){
-              labeledLineMatchingData.item.textStyle[i]=info[i];
-            }
           }
         }else if(info.name=="boxStyle"){
           for(let i in info){
@@ -135,37 +120,27 @@ export function modifyItionLabeledLine(id,data){
                   if(li.name==outer.name){
                     for(let L in li){
                       outer[L]=li[L];
-                      if(current){
-                        let hold=labeledLineMatchingData.item.boxStyle.item[index];
-                        hold[L]=li[L];
-                      }
                     }
                   }
                 })
               })
             }else{
               item.boxStyle[i]=info[i];
-              if(current){
-                labeledLineMatchingData.item.boxStyle[i]=info[i];
-              }
             }
           }
         }
       })
     }
   })
-  console.log(labeledLine);
 }
 
 // 删除横轴标记线
 export function deleteItionLabeledLine(id){
   labeledLine.forEach((item,index)=>{
-    if(item.id==id){
+    if(item.id==id || item.data[labeledLineIdName]==id){
       labeledLine.splice(index,1);
     }
   })
-  labeledLineMatching=false;
-  labeledLineMatchingData={};
   cursorPointer=false;
 }
 
@@ -178,29 +153,48 @@ export function emptyItionLabeledLine(){
  * 点击触发是否点了标点线的按钮
  */
 export function triggerPunctuationClick (event) {
-  if(labeledLineMatching){
-    let w = labeledLineMatchingData.item.boxStyle.width;
-    let h = labeledLineMatchingData.item.boxStyle.height;;
-    let x = labeledLineHoldXY.x;
-    let y = labeledLineHoldXY.y-h/2;
+  let selected=false;
+  let itemValue=null;
+  let indexValue=null;
+  let useX = null;
+  let useX1 = null;
+  let useY = null;
+  let useY1 = null;
+  labeledLine.forEach((item,index)=>{
+    let w = item.boxStyle.width;
+    let h = item.boxStyle.height;
+    let priceY = yAxis1.convertToPixel(item.value);
+    // 定义canvas画笔的x坐标点
+    let x = item.shaftX;
+    // 定义canvas画笔的y坐标点
+    let y = priceY - h / 2;
     let y1 = y + h;
     if(x>w){
       x = x-w;
     }
     let x1 = x + w;
-    let useX = x;
-    let useX1 = x;
     if(event.localX>x && event.localX<x1 && event.localY>y && event.localY<y1){
-      labeledLineMatchingData.item.boxStyle.item.forEach(data=>{
-        useX1 += data.width;
-        if(data.clickable){
-          if(event.localX>useX && event.localX<useX1 && event.localY>y && event.localY<y1){
-            labeledLineMatchingData.item.agentClick(data,labeledLineMatchingData);
-          }
-        }
-        useX += data.width;
-      })
+      if(labeledLine[index].id==labeledLine[labeledLine.length-1].id){
+        selected=true;
+        indexValue=index;
+        itemValue=item;
+        useX = x;
+        useX1 = x;
+        useY = y;
+        useY1 = y1;
+      }
     }
+  })
+  if(selected){
+    itemValue.boxStyle.item.forEach(data=>{
+      useX1 += data.width;
+      if(data.clickable){
+        if(event.localX>useX && event.localX<useX1 && event.localY>useY && event.localY<useY1){
+          labeledLine[indexValue].agentClick(data,itemValue);
+        }
+      }
+      useX += data.width;
+    })
   }
 }
 
@@ -350,7 +344,9 @@ export default class ChartData {
     this._barSpace = this._calcBarSpace()
     return true
   }
-
+  storeYAxis(yAxis){
+    yAxis1=yAxis;
+  }
   /**
    * 获取样式配置
    */
@@ -872,38 +868,49 @@ export default class ChartData {
     return this._drawActionDelegate[type]
   }
 
-
-   /**
-   * 标线文字提示框的数据集合
+  /**
+   * 移动判断提示框是否移动到了提示框上
    */
   getLabeledLine (yAxis,event) {
-    if(labeledLine && labeledLine.length && labeledLine.length>=1){
-      if(labeledLineHoldXY && labeledLineMatchingData && labeledLineMatchingData.item){
-        this.triggerValue=labeledLineMatchingData.item.boxStyle.height/2;
-      }else{
-        this.triggerValue=2
+    let selected=true;
+    let selectedOther=false;
+    let itemData=null;
+    let indexValue=null;
+    let cursor=false;
+    labeledLine.forEach((item,index)=>{
+      let w = item.boxStyle.width;
+      let h = item.boxStyle.height;
+      let priceY = yAxis.convertToPixel(item.value);
+      // 定义canvas画笔的x坐标点
+      let x = item.shaftX;
+      // 定义canvas画笔的y坐标点
+      let y = priceY - h / 2;
+      let y1 = y + h;
+      if(x>w){
+        x = x-w;
       }
-      for(let i=0;i<labeledLine.length;i++){
-        this.priceY = yAxis.convertToPixel(labeledLine[i].value);
-        if(event.localY+this.triggerValue>=this.priceY && event.localY-this.triggerValue<=this.priceY){
-          labeledLineMatching=true;
-          labeledLineMatchingData={item:labeledLine[i]};
-          this.findValue=true;
-          cursorPointer=true;
-          break;
-        }else{
-          cursorPointer=false;
-          labeledLineMatching=false;
+      let x1 = x + w;
+      if(event.localX>x && event.localX<x1 && event.localY>y && event.localY<y1){
+        cursor=true;
+        if(labeledLine[index].id==labeledLine[labeledLine.length-1].id){
+          selected=false;
+        }
+        if(labeledLine[index].id!=labeledLine[labeledLine.length-1].id){
+          selectedOther=true;
+          itemData=item;
+          indexValue=index;
         }
       }
-      if(this.findValue){
-        if(!labeledLineHoldXY){
-          labeledLineHoldXY={x:event.localX,y:event.localY};
-        }
-        this.findValue=false;
-      }else{
-        labeledLineHoldXY=null;
-      }
+    })
+    if(cursor){
+      cursorPointer=true;
+    }else{
+      cursorPointer=false;
+    }
+    if(selected && selectedOther){
+      labeledLine.push({...itemData});
+      labeledLine.splice(indexValue,1);
+      this._invalidateHandler();
     }
   }
 }
