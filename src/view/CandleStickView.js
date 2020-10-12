@@ -271,16 +271,18 @@ export default class CandleStickView extends TechnicalIndicatorView {
       labeledLine.forEach(item=>{
         let close = item.value;
         let priceY = this._yAxis.convertToPixel(close)
-        priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
-        let priceMarkLine = item.lineStyle;
-        this._ctx.save()
-        this._ctx.strokeStyle = item.lineStyle.color;
-        this._ctx.lineWidth = priceMarkLine.size
-        if (priceMarkLine.style === LineStyle.DASH) {
-          this._ctx.setLineDash(priceMarkLine.dashValue)
+        // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
+        if(priceY>0 || priceY<masterMapHeight){
+          let priceMarkLine = item.lineStyle;
+          this._ctx.save()
+          this._ctx.strokeStyle = item.lineStyle.color;
+          this._ctx.lineWidth = priceMarkLine.size
+          if (priceMarkLine.style === LineStyle.DASH) {
+            this._ctx.setLineDash(priceMarkLine.dashValue)
+          }
+          drawHorizontalLine(this._ctx, priceY, 0, this._width)
+          this._ctx.restore()
         }
-        drawHorizontalLine(this._ctx, priceY, 0, this._width)
-        this._ctx.restore()
       })
     }
   }
@@ -300,84 +302,86 @@ export default class CandleStickView extends TechnicalIndicatorView {
 
         let close = data.value;
         let priceY = this._yAxis.convertToPixel(close)
-        priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0);
-        // 定义canvas画笔的x坐标点
-        let x = data.shaftX;
-        // 定义canvas画笔的y坐标点
-        let y = priceY - h / 2;
-        // 定义圆角的半径
-        let r = data.boxStyle.borderRadius;
-        // 缩放
-        this._ctx.scale(1, 1);
-        
-        // 开始
-        this._ctx.beginPath();
-        this._ctx.moveTo(x+r, y);
-        this._ctx.arcTo(x+w, y, x+w, y+h, r);
-        this._ctx.arcTo(x+w, y+h, x, y+h, r);
-        this._ctx.arcTo(x, y+h, x, y, r);
-        this._ctx.arcTo(x, y, x+w, y, r);
-        this._ctx.stroke();
-        
-        // 设置阴影
-        this._ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'; // 颜色
-        this._ctx.shadowBlur = 5; // 模糊尺寸
-        this._ctx.shadowOffsetX = 2; // 阴影Y轴偏移
-        this._ctx.shadowOffsetY = 2; // 阴影X轴偏移
-        // 文字提示框的颜色
-        this._ctx.strokeStyle=data.boxStyle.borderColor;
-        this._ctx.lineWidth=data.boxStyle.borderLine;
-        //沿着坐标点顺序的路径绘制直线
-        this._ctx.stroke();
-        // 关闭,形成一个闭合的回路---->轮廓
-        this._ctx.closePath();
-        // 填充
-        // this._ctx.fill();
+        // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0);
+        if(priceY>0 || priceY<masterMapHeight){
+          // 定义canvas画笔的x坐标点
+          let x = data.shaftX;
+          // 定义canvas画笔的y坐标点
+          let y = priceY - h / 2;
+          // 定义圆角的半径
+          let r = data.boxStyle.borderRadius;
+          // 缩放
+          this._ctx.scale(1, 1);
+          
+          // 开始
+          this._ctx.beginPath();
+          this._ctx.moveTo(x+r, y);
+          this._ctx.arcTo(x+w, y, x+w, y+h, r);
+          this._ctx.arcTo(x+w, y+h, x, y+h, r);
+          this._ctx.arcTo(x, y+h, x, y, r);
+          this._ctx.arcTo(x, y, x+w, y, r);
+          this._ctx.stroke();
+          
+          // 设置阴影
+          this._ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'; // 颜色
+          this._ctx.shadowBlur = 5; // 模糊尺寸
+          this._ctx.shadowOffsetX = 2; // 阴影Y轴偏移
+          this._ctx.shadowOffsetY = 2; // 阴影X轴偏移
+          // 文字提示框的颜色
+          this._ctx.strokeStyle=data.boxStyle.borderColor;
+          this._ctx.lineWidth=data.boxStyle.borderLine;
+          //沿着坐标点顺序的路径绘制直线
+          this._ctx.stroke();
+          // 关闭,形成一个闭合的回路---->轮廓
+          this._ctx.closePath();
+          // 填充
+          // this._ctx.fill();
 
-        let useX = x;
-        
-        data.boxStyle.item.forEach(item=>{
-          if(item.type=="text"){
-            this._ctx.fillStyle=item.background;
-            this._ctx.fillRect(useX,y,item.width,item.height); 
-            this._ctx.fill();
-            this._ctx.closePath();
-            //开始一个新的绘制路径
-            this._ctx.beginPath();
-            this._ctx.strokeStyle=item.borderColor;
-            this._ctx.lineWidth=item.borderLine;
-            this._ctx.moveTo(useX, y);
-            this._ctx.lineTo(useX, y+item.height);
-            this._ctx.font = item.font;
-            this._ctx.fillStyle = item.color;
-            this._ctx.fillText(item.text,useX+item.textOffsetLeft,y+item.textOffsetTop,item.width);
-            //沿着坐标点顺序的路径绘制直线
-            this._ctx.stroke();
-            //关闭当前的绘制路径
-            this._ctx.closePath();
-          }else if(item.type=="img"){
-            this._ctx.fillRect(useX,y,item.width,item.height); 
-            this._ctx.fillStyle=item.background;
-            this._ctx.fill();
-            this._ctx.closePath();
-            //开始一个新的绘制路径
-            this._ctx.beginPath();
-            this._ctx.strokeStyle=item.borderColor;
-            this._ctx.lineWidth=item.borderLine;
-            this._ctx.moveTo(useX, y);
-            this._ctx.lineTo(useX, y+item.height);
-            //沿着坐标点顺序的路径绘制直线
-            this._ctx.stroke();
-            let imgObj= new Image();
-            imgObj.src = item.url;
-            if(imgObj.src!=''){
-              this._ctx.drawImage(imgObj, useX + item.textOffsetLeft,  y + item.textOffsetTop ,item.imgWidth,item.imgHeight);
+          let useX = x;
+          
+          data.boxStyle.item.forEach(item=>{
+            if(item.type=="text"){
+              this._ctx.fillStyle=item.background;
+              this._ctx.fillRect(useX,y,item.width,item.height); 
+              this._ctx.fill();
+              this._ctx.closePath();
+              //开始一个新的绘制路径
+              this._ctx.beginPath();
+              this._ctx.strokeStyle=item.borderColor;
+              this._ctx.lineWidth=item.borderLine;
+              this._ctx.moveTo(useX, y);
+              this._ctx.lineTo(useX, y+item.height);
+              this._ctx.font = item.font;
+              this._ctx.fillStyle = item.color;
+              this._ctx.fillText(item.text,useX+item.textOffsetLeft,y+item.textOffsetTop,item.width);
+              //沿着坐标点顺序的路径绘制直线
+              this._ctx.stroke();
+              //关闭当前的绘制路径
+              this._ctx.closePath();
+            }else if(item.type=="img"){
+              this._ctx.fillRect(useX,y,item.width,item.height); 
+              this._ctx.fillStyle=item.background;
+              this._ctx.fill();
+              this._ctx.closePath();
+              //开始一个新的绘制路径
+              this._ctx.beginPath();
+              this._ctx.strokeStyle=item.borderColor;
+              this._ctx.lineWidth=item.borderLine;
+              this._ctx.moveTo(useX, y);
+              this._ctx.lineTo(useX, y+item.height);
+              //沿着坐标点顺序的路径绘制直线
+              this._ctx.stroke();
+              let imgObj= new Image();
+              imgObj.src = item.url;
+              if(imgObj.src!=''){
+                this._ctx.drawImage(imgObj, useX + item.textOffsetLeft,  y + item.textOffsetTop ,item.imgWidth,item.imgHeight);
+              }
+              //关闭当前的绘制路径
+              this._ctx.closePath();
             }
-            //关闭当前的绘制路径
-            this._ctx.closePath();
-          }
-          useX+=item.width;
-        })
+            useX+=item.width;
+          })
+        }
       })
     }
   }

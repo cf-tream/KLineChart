@@ -3066,7 +3066,6 @@ var Delegate = /*#__PURE__*/function () {
   return Delegate;
 }();
 
-var timer = null;
 var yAxis1 = null; // 标记线的数据
 
 var labeledLine = []; // 标记线的id名
@@ -3125,16 +3124,14 @@ function additionLabeledLine(data, idName) {
   var id = Number(Math.random().toString().substr(3, 12) + Date.now()).toString(36);
   data.id = id;
   labeledLineIdName = idName;
-  labeledLine.push(_objectSpread2({}, data));
+  labeledLine.push(data);
+  labeledLine.forEach(function (item, index) {
+    item.index = index;
+  });
 } // 修改横轴标记线
 
 function modifyItionLabeledLine(id, data) {
-  console.log('------------------------');
   labeledLine.forEach(function (item) {
-    console.log(id);
-    console.log(item.data[labeledLineIdName]);
-    console.log(item.data);
-
     if (item.id == id || item.data[labeledLineIdName] == id) {
       data.forEach(function (info) {
         if (info.name == 'data') {
@@ -3232,7 +3229,6 @@ function triggerPunctuationClick(event) {
 
       if (data.clickable) {
         if (event.localX > useX && event.localX < useX1 && event.localY > useY && event.localY < useY1) {
-          console.log(labeledLine);
           labeledLine[indexValue].agentClick(data, itemValue);
         }
       }
@@ -3342,7 +3338,11 @@ var ChartData = /*#__PURE__*/function () {
 
     this.triggerValue = 0; // 是否找到值
 
-    this.findValue = false;
+    this.findValue = false; // 滑动的定时器
+
+    this.timer = null; // 是否是进入到浮框后进入外面
+
+    this.afterFloatBox = false;
   }
   /**
    * 加载更多持有者
@@ -3812,15 +3812,15 @@ var ChartData = /*#__PURE__*/function () {
 
       if (move && move >= 2 || move <= -2) {
         isStillMoving = true;
-        clearTimeout(timer);
-        timer = setInterval(function () {
+        clearTimeout(this.timer);
+        this.timer = setInterval(function () {
           _this.scroll(distance + move, move *= 0.95);
 
           decelerationValues = distance + move;
         }, 15);
       } else {
         isStillMoving = false;
-        clearTimeout(timer);
+        clearTimeout(this.timer);
       }
 
       var distanceBarCount = distance / this._dataSpace;
@@ -4094,18 +4094,33 @@ var ChartData = /*#__PURE__*/function () {
         }
       });
 
-      if (cursor) {
-        cursorPointer = true;
-      } else {
-        cursorPointer = false;
-      }
-
       if (selected && selectedOther) {
         labeledLine.push(_objectSpread2({}, itemData));
         labeledLine.splice(indexValue, 1);
 
         this._invalidateHandler();
+
+        this.afterFloatBox = true;
       }
+
+      if (cursor) {
+        cursorPointer = true;
+      } else {
+        cursorPointer = false;
+
+        if (this.afterFloatBox) {
+          console.log(2);
+          labeledLine.sort(this.sortRule);
+          this.afterFloatBox = false;
+
+          this._invalidateHandler();
+        }
+      }
+    }
+  }, {
+    key: "sortRule",
+    value: function sortRule(a, b) {
+      return a.index - b.index;
     }
   }]);
 
@@ -5769,9 +5784,16 @@ var YAxisView = /*#__PURE__*/function (_View) {
       if (masterMapHeight == this._ctx.canvas.height) {
         var textStyle = {};
         labeledLine.forEach(function (item) {
-          textStyle = item.textStyle;
+          var close = item.value;
 
-          _this5._drawMarkLabel(yAxisOptions, item.value, 2, textStyle.size, textStyle.weight, textStyle.family, textStyle.color, textStyle.background, textStyle.paddingLeft, textStyle.paddingTop, textStyle.paddingRight, textStyle.paddingBottom);
+          var priceY = _this5._yAxis.convertToPixel(close); // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
+
+
+          if (priceY > 0 || priceY < masterMapHeight) {
+            textStyle = item.textStyle;
+
+            _this5._drawMarkLabel(yAxisOptions, item.value, 2, textStyle.size, textStyle.weight, textStyle.family, textStyle.color, textStyle.background, textStyle.paddingLeft, textStyle.paddingTop, textStyle.paddingRight, textStyle.paddingBottom);
+          }
         });
       }
     }
@@ -7039,23 +7061,25 @@ var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
         labeledLine.forEach(function (item) {
           var close = item.value;
 
-          var priceY = _this4._yAxis.convertToPixel(close);
+          var priceY = _this4._yAxis.convertToPixel(close); // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
 
-          priceY = +Math.max(_this4._height * 0.05, Math.min(priceY, _this4._height * 0.98)).toFixed(0);
-          var priceMarkLine = item.lineStyle;
 
-          _this4._ctx.save();
+          if (priceY > 0 || priceY < masterMapHeight) {
+            var priceMarkLine = item.lineStyle;
 
-          _this4._ctx.strokeStyle = item.lineStyle.color;
-          _this4._ctx.lineWidth = priceMarkLine.size;
+            _this4._ctx.save();
 
-          if (priceMarkLine.style === LineStyle.DASH) {
-            _this4._ctx.setLineDash(priceMarkLine.dashValue);
+            _this4._ctx.strokeStyle = item.lineStyle.color;
+            _this4._ctx.lineWidth = priceMarkLine.size;
+
+            if (priceMarkLine.style === LineStyle.DASH) {
+              _this4._ctx.setLineDash(priceMarkLine.dashValue);
+            }
+
+            drawHorizontalLine(_this4._ctx, priceY, 0, _this4._width);
+
+            _this4._ctx.restore();
           }
-
-          drawHorizontalLine(_this4._ctx, priceY, 0, _this4._width);
-
-          _this4._ctx.restore();
         });
       }
     }
@@ -7079,120 +7103,122 @@ var CandleStickView = /*#__PURE__*/function (_TechnicalIndicatorVi) {
           var h = data.boxStyle.height;
           var close = data.value;
 
-          var priceY = _this5._yAxis.convertToPixel(close);
-
-          priceY = +Math.max(_this5._height * 0.05, Math.min(priceY, _this5._height * 0.98)).toFixed(0); // 定义canvas画笔的x坐标点
-
-          var x = data.shaftX; // 定义canvas画笔的y坐标点
-
-          var y = priceY - h / 2; // 定义圆角的半径
-
-          var r = data.boxStyle.borderRadius; // 缩放
-
-          _this5._ctx.scale(1, 1); // 开始
+          var priceY = _this5._yAxis.convertToPixel(close); // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0);
 
 
-          _this5._ctx.beginPath();
+          if (priceY > 0 || priceY < masterMapHeight) {
+            // 定义canvas画笔的x坐标点
+            var x = data.shaftX; // 定义canvas画笔的y坐标点
 
-          _this5._ctx.moveTo(x + r, y);
+            var y = priceY - h / 2; // 定义圆角的半径
 
-          _this5._ctx.arcTo(x + w, y, x + w, y + h, r);
+            var r = data.boxStyle.borderRadius; // 缩放
 
-          _this5._ctx.arcTo(x + w, y + h, x, y + h, r);
-
-          _this5._ctx.arcTo(x, y + h, x, y, r);
-
-          _this5._ctx.arcTo(x, y, x + w, y, r);
-
-          _this5._ctx.stroke(); // 设置阴影
+            _this5._ctx.scale(1, 1); // 开始
 
 
-          _this5._ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'; // 颜色
+            _this5._ctx.beginPath();
 
-          _this5._ctx.shadowBlur = 5; // 模糊尺寸
+            _this5._ctx.moveTo(x + r, y);
 
-          _this5._ctx.shadowOffsetX = 2; // 阴影Y轴偏移
+            _this5._ctx.arcTo(x + w, y, x + w, y + h, r);
 
-          _this5._ctx.shadowOffsetY = 2; // 阴影X轴偏移
-          // 文字提示框的颜色
+            _this5._ctx.arcTo(x + w, y + h, x, y + h, r);
 
-          _this5._ctx.strokeStyle = data.boxStyle.borderColor;
-          _this5._ctx.lineWidth = data.boxStyle.borderLine; //沿着坐标点顺序的路径绘制直线
+            _this5._ctx.arcTo(x, y + h, x, y, r);
 
-          _this5._ctx.stroke(); // 关闭,形成一个闭合的回路---->轮廓
+            _this5._ctx.arcTo(x, y, x + w, y, r);
 
-
-          _this5._ctx.closePath(); // 填充
-          // this._ctx.fill();
+            _this5._ctx.stroke(); // 设置阴影
 
 
-          var useX = x;
-          data.boxStyle.item.forEach(function (item) {
-            if (item.type == "text") {
-              _this5._ctx.fillStyle = item.background;
+            _this5._ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'; // 颜色
 
-              _this5._ctx.fillRect(useX, y, item.width, item.height);
+            _this5._ctx.shadowBlur = 5; // 模糊尺寸
 
-              _this5._ctx.fill();
+            _this5._ctx.shadowOffsetX = 2; // 阴影Y轴偏移
 
-              _this5._ctx.closePath(); //开始一个新的绘制路径
+            _this5._ctx.shadowOffsetY = 2; // 阴影X轴偏移
+            // 文字提示框的颜色
 
+            _this5._ctx.strokeStyle = data.boxStyle.borderColor;
+            _this5._ctx.lineWidth = data.boxStyle.borderLine; //沿着坐标点顺序的路径绘制直线
 
-              _this5._ctx.beginPath();
-
-              _this5._ctx.strokeStyle = item.borderColor;
-              _this5._ctx.lineWidth = item.borderLine;
-
-              _this5._ctx.moveTo(useX, y);
-
-              _this5._ctx.lineTo(useX, y + item.height);
-
-              _this5._ctx.font = item.font;
-              _this5._ctx.fillStyle = item.color;
-
-              _this5._ctx.fillText(item.text, useX + item.textOffsetLeft, y + item.textOffsetTop, item.width); //沿着坐标点顺序的路径绘制直线
+            _this5._ctx.stroke(); // 关闭,形成一个闭合的回路---->轮廓
 
 
-              _this5._ctx.stroke(); //关闭当前的绘制路径
+            _this5._ctx.closePath(); // 填充
+            // this._ctx.fill();
 
 
-              _this5._ctx.closePath();
-            } else if (item.type == "img") {
-              _this5._ctx.fillRect(useX, y, item.width, item.height);
+            var useX = x;
+            data.boxStyle.item.forEach(function (item) {
+              if (item.type == "text") {
+                _this5._ctx.fillStyle = item.background;
 
-              _this5._ctx.fillStyle = item.background;
+                _this5._ctx.fillRect(useX, y, item.width, item.height);
 
-              _this5._ctx.fill();
+                _this5._ctx.fill();
 
-              _this5._ctx.closePath(); //开始一个新的绘制路径
-
-
-              _this5._ctx.beginPath();
-
-              _this5._ctx.strokeStyle = item.borderColor;
-              _this5._ctx.lineWidth = item.borderLine;
-
-              _this5._ctx.moveTo(useX, y);
-
-              _this5._ctx.lineTo(useX, y + item.height); //沿着坐标点顺序的路径绘制直线
+                _this5._ctx.closePath(); //开始一个新的绘制路径
 
 
-              _this5._ctx.stroke();
+                _this5._ctx.beginPath();
 
-              var _imgObj = new Image();
+                _this5._ctx.strokeStyle = item.borderColor;
+                _this5._ctx.lineWidth = item.borderLine;
 
-              _imgObj.src = item.url;
+                _this5._ctx.moveTo(useX, y);
 
-              if (_imgObj.src != '') {
-                _this5._ctx.drawImage(_imgObj, useX + item.textOffsetLeft, y + item.textOffsetTop, item.imgWidth, item.imgHeight);
-              } //关闭当前的绘制路径
+                _this5._ctx.lineTo(useX, y + item.height);
+
+                _this5._ctx.font = item.font;
+                _this5._ctx.fillStyle = item.color;
+
+                _this5._ctx.fillText(item.text, useX + item.textOffsetLeft, y + item.textOffsetTop, item.width); //沿着坐标点顺序的路径绘制直线
 
 
-              _this5._ctx.closePath();
-            }
+                _this5._ctx.stroke(); //关闭当前的绘制路径
 
-            useX += item.width;
-          });
+
+                _this5._ctx.closePath();
+              } else if (item.type == "img") {
+                _this5._ctx.fillRect(useX, y, item.width, item.height);
+
+                _this5._ctx.fillStyle = item.background;
+
+                _this5._ctx.fill();
+
+                _this5._ctx.closePath(); //开始一个新的绘制路径
+
+
+                _this5._ctx.beginPath();
+
+                _this5._ctx.strokeStyle = item.borderColor;
+                _this5._ctx.lineWidth = item.borderLine;
+
+                _this5._ctx.moveTo(useX, y);
+
+                _this5._ctx.lineTo(useX, y + item.height); //沿着坐标点顺序的路径绘制直线
+
+
+                _this5._ctx.stroke();
+
+                var _imgObj = new Image();
+
+                _imgObj.src = item.url;
+
+                if (_imgObj.src != '') {
+                  _this5._ctx.drawImage(_imgObj, useX + item.textOffsetLeft, y + item.textOffsetTop, item.imgWidth, item.imgHeight);
+                } //关闭当前的绘制路径
+
+
+                _this5._ctx.closePath();
+              }
+
+              useX += item.width;
+            });
+          }
         });
       }
     }

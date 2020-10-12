@@ -20,7 +20,6 @@ import { createNewTechnicalIndicator, createTechnicalIndicators } from './techni
 import { DEV } from '../utils/env'
 import { TechnicalIndicatorSeries } from './technicalindicator/TechnicalIndicator'
 import Delegate from './delegate/Delegate'
-var timer=null;
 var yAxis1=null;
 // 标记线的数据
 export var labeledLine=[];
@@ -90,7 +89,10 @@ export function additionLabeledLine(data,idName){
   let id=Number(Math.random().toString().substr(3,12) + Date.now()).toString(36);
   data.id=id;
   labeledLineIdName=idName;
-  labeledLine.push({...data});
+  labeledLine.push(data);
+  labeledLine.forEach((item,index)=>{
+    item.index=index;
+  })
 }
 
 // 修改横轴标记线
@@ -304,6 +306,10 @@ export default class ChartData {
     this.triggerValue=0;
     // 是否找到值
     this.findValue=false;
+    // 滑动的定时器
+    this.timer=null;
+    // 是否是进入到浮框后进入外面
+    this.afterFloatBox=false;
   }
 
   /**
@@ -675,14 +681,14 @@ export default class ChartData {
   scroll (distance,move) {
     if(move && move>=2 || move<=-2){
       isStillMoving=true;
-      clearTimeout(timer);
-      timer=setInterval(()=>{
+      clearTimeout(this.timer);
+      this.timer=setInterval(()=>{
         this.scroll(distance+move,move*=0.95);
         decelerationValues=distance+move;
       },15);
     }else{
       isStillMoving=false;
-      clearTimeout(timer);
+      clearTimeout(this.timer);
     }
     const distanceBarCount = distance / this._dataSpace
     this._offsetRightBarCount = this._preOffsetRightBarCount - distanceBarCount
@@ -902,15 +908,25 @@ export default class ChartData {
         }
       }
     })
-    if(cursor){
-      cursorPointer=true;
-    }else{
-      cursorPointer=false;
-    }
+    
     if(selected && selectedOther){
       labeledLine.push({...itemData});
       labeledLine.splice(indexValue,1);
       this._invalidateHandler();
+      this.afterFloatBox=true;
     }
+    if(cursor){
+      cursorPointer=true;
+    }else{
+      cursorPointer=false;
+      if(this.afterFloatBox){
+        labeledLine.sort(this.sortRule);
+        this.afterFloatBox=false;
+        this._invalidateHandler();
+      }
+    }
+  }
+  sortRule(a,b) {
+    return a.index-b.index; 
   }
 }

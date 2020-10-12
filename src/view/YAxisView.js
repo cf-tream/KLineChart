@@ -219,14 +219,19 @@ export default class YAxisView extends View {
     if(masterMapHeight==this._ctx.canvas.height){
       let textStyle={};
       labeledLine.forEach(item=>{
-        textStyle=item.textStyle;
-        this._drawMarkLabel(
-          yAxisOptions, item.value, 2,
-          textStyle.size, textStyle.weight, textStyle.family,
-          textStyle.color, textStyle.background,
-          textStyle.paddingLeft, textStyle.paddingTop,
-          textStyle.paddingRight, textStyle.paddingBottom
-        )
+        let close = item.value;
+        let priceY = this._yAxis.convertToPixel(close);
+        // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
+        if(priceY>0 || priceY<masterMapHeight){
+          textStyle=item.textStyle;
+          this._drawMarkLabel(
+            yAxisOptions, item.value, 2,
+            textStyle.size, textStyle.weight, textStyle.family,
+            textStyle.color, textStyle.background,
+            textStyle.paddingLeft, textStyle.paddingTop,
+            textStyle.paddingRight, textStyle.paddingBottom
+          )
+        }
       })
     }
   }
