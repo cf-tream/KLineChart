@@ -272,7 +272,7 @@ export default class CandleStickView extends TechnicalIndicatorView {
         let close = item.value;
         let priceY = this._yAxis.convertToPixel(close)
         // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
-        if(priceY>0 || priceY<masterMapHeight){
+        if(priceY>0 && priceY<masterMapHeight){
           let priceMarkLine = item.lineStyle;
           this._ctx.save()
           this._ctx.strokeStyle = item.lineStyle.color;
@@ -303,7 +303,7 @@ export default class CandleStickView extends TechnicalIndicatorView {
         let close = data.value;
         let priceY = this._yAxis.convertToPixel(close)
         // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0);
-        if(priceY>0 || priceY<masterMapHeight){
+        if(priceY>0 && priceY<masterMapHeight){
           // 定义canvas画笔的x坐标点
           let x = data.shaftX;
           // 定义canvas画笔的y坐标点

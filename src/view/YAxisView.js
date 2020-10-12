@@ -222,7 +222,7 @@ export default class YAxisView extends View {
         let close = item.value;
         let priceY = this._yAxis.convertToPixel(close);
         // priceY = +(Math.max(this._height * 0.05, Math.min(priceY, this._height * 0.98))).toFixed(0)
-        if(priceY>0 || priceY<masterMapHeight){
+        if(priceY>0 && priceY<masterMapHeight){
           textStyle=item.textStyle;
           this._drawMarkLabel(
             yAxisOptions, item.value, 2,
