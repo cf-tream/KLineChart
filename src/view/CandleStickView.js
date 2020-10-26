@@ -74,6 +74,10 @@ export default class CandleStickView extends TechnicalIndicatorView {
       const realTime = this._chartData.styleOptions().realTime
       const timeLine = realTime.timeLine
       if (timeLinePoints.length > 0) {
+        imgObj.src = IogoData.imgUrl;
+        if(imgObj.src!=''){
+          this._ctx.drawImage(imgObj, (this._ctx.canvas.width-IogoData.width/2)*IogoData.x, (this._ctx.canvas.height-IogoData.height/2)*IogoData.y,IogoData.width,IogoData.height);
+        }
         // 绘制分时线
         this._ctx.lineWidth = timeLine.size
         this._ctx.strokeStyle = timeLine.color
