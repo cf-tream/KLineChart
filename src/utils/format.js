@@ -59,10 +59,16 @@ export function formatDate (dateTimeFormat, timestamp, format = 'MM-DD hh:mm') {
 /**
  * 格式化精度
  */
-export function formatPrecision (value, precision = 2) {
+export function formatPrecision (value, precision = 2 , two) {
+  let sum = 2;
+  if(!two){
+    if(value && value.toString().indexOf(".") != -1){
+      sum = value.toString().split(".")[1].length;
+    }
+  }
   const v = +value
   if ((v || v === 0) && isNumber(v)) {
-    return v.toFixed(precision)
+    return v.toFixed(sum)
   }
   return `${v}`
 }
