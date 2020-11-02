@@ -21,6 +21,7 @@ var imgObj=new Image();
 export default class CandleStickView extends TechnicalIndicatorView {
   _draw () {
     this._drawGrid()
+    this._drawIogoData()
     if (this._additionalDataProvider.chartType() === ChartType.REAL_TIME) {
       this._drawRealTime()
     } else {
@@ -74,10 +75,6 @@ export default class CandleStickView extends TechnicalIndicatorView {
       const realTime = this._chartData.styleOptions().realTime
       const timeLine = realTime.timeLine
       if (timeLinePoints.length > 0) {
-        if(IogoData && IogoData.imgUrl && IogoData.imgUrl!=''){
-          imgObj.src = IogoData.imgUrl;
-          this._ctx.drawImage(imgObj, (parseFloat(this._ctx.canvas.style.width)-IogoData.width)*IogoData.x, (parseFloat(this._ctx.canvas.style.height)-IogoData.height)*IogoData.y,IogoData.width,IogoData.height);
-        }
         // 绘制分时线
         this._ctx.lineWidth = timeLine.size
         this._ctx.strokeStyle = timeLine.color
@@ -127,14 +124,24 @@ export default class CandleStickView extends TechnicalIndicatorView {
    * @private
    */
   _drawCandleStick () {
-    if(IogoData && IogoData.imgUrl && IogoData.imgUrl!=''){
-      imgObj.src = IogoData.imgUrl;
-      this._ctx.drawImage(imgObj, (parseFloat(this._ctx.canvas.style.width)-IogoData.width)*IogoData.x, (parseFloat(this._ctx.canvas.style.height)-IogoData.height)*IogoData.y,IogoData.width,IogoData.height);
-    }
+    
     const candleStickOptions = this._chartData.styleOptions().candleStick
     this._drawGraphics((x, i, kLineData, halfBarSpace, barSpace) => {
       this._drawCandleStickBar(x, halfBarSpace, barSpace, kLineData, candleStickOptions.bar, candleStickOptions.bar.style)
     })
+  }
+
+    /**
+   * 绘制图片logo
+   * @private
+   */
+  _drawIogoData () {
+    if(IogoData && IogoData.imgUrl && IogoData.imgUrl!=''){
+      imgObj.src = IogoData.imgUrl;
+      this._ctx.globalAlpha= IogoData.opacity;
+      this._ctx.drawImage(imgObj, (parseFloat(this._ctx.canvas.style.width)-IogoData.width)*IogoData.x, (parseFloat(this._ctx.canvas.style.height)-IogoData.height)*IogoData.y,IogoData.width,IogoData.height);
+      this._ctx.globalAlpha=1;
+    }
   }
 
   /**

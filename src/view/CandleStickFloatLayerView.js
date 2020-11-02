@@ -59,7 +59,6 @@ export default class CandleStickFloatLayerView extends TechnicalIndicatorFloatLa
       this._ctx.fillStyle = textColor
       this._ctx.fillText(labelText, labelX, labelY)
       labelX += labelWidth
-
       const value = values[i] || 'n/a'
       let valueText
       if (isObject(value)) {
