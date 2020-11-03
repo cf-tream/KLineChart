@@ -61,7 +61,9 @@ export function formatDate (dateTimeFormat, timestamp, format = 'MM-DD hh:mm') {
  */
 export function formatPrecision (value, precision = 2 , two) {
   let sum = 2;
-  if(!two){
+  if(two){
+    sum = two;
+  }else{
     if(value && value.toString().indexOf(".") != -1){
       sum = value.toString().split(".")[1].length;
     }

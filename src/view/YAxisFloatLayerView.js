@@ -47,7 +47,7 @@ export default class YAxisFloatLayerView extends View {
     } else {
       const technicalIndicator = this._additionalDataProvider.technicalIndicator()
       const precision = this._yAxis.isCandleStickYAxis() ? this._chartData.pricePrecision() : technicalIndicator.precision
-      yAxisDataLabel = formatPrecision(value, precision, true)
+      yAxisDataLabel = formatPrecision(value, precision, 2)
       if (technicalIndicator.shouldFormatBigNumber) {
         yAxisDataLabel = formatBigNumber(yAxisDataLabel)
       }
