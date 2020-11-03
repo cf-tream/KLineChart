@@ -18,6 +18,7 @@ import { drawHorizontalLine, drawVerticalLine, getFont, drawLine } from '../util
 import { formatPrecision, formatValue } from '../utils/format'
 import { IogoData,labeledLine,masterMapHeightAlter,masterMapHeight } from '../data/ChartData'
 var imgObj=new Image();
+var imgObjLoad = true;
 export default class CandleStickView extends TechnicalIndicatorView {
   _draw () {
     this._drawGrid()
@@ -137,10 +138,20 @@ export default class CandleStickView extends TechnicalIndicatorView {
    */
   _drawIogoData () {
     if(IogoData && IogoData.imgUrl && IogoData.imgUrl!=''){
-      imgObj.src = IogoData.imgUrl;
-      this._ctx.globalAlpha= IogoData.opacity;
-      this._ctx.drawImage(imgObj, (parseFloat(this._ctx.canvas.style.width)-IogoData.width)*IogoData.x, (parseFloat(this._ctx.canvas.style.height)-IogoData.height)*IogoData.y,IogoData.width,IogoData.height);
-      this._ctx.globalAlpha=1;
+      let _this = this;
+      if(!imgObjLoad && imgObj.src){
+        _this._ctx.globalAlpha= IogoData.opacity;
+        _this._ctx.drawImage(imgObj, (parseFloat(_this._ctx.canvas.style.width)-IogoData.width)*IogoData.x, (parseFloat(_this._ctx.canvas.style.height)-IogoData.height)*IogoData.y,IogoData.width,IogoData.height);
+        _this._ctx.globalAlpha=1;
+      } else {
+        imgObj.src = IogoData.imgUrl;
+        imgObj.onload = function(){
+          _this._ctx.globalAlpha= IogoData.opacity;
+          _this._ctx.drawImage(imgObj, (parseFloat(_this._ctx.canvas.style.width)-IogoData.width)*IogoData.x, (parseFloat(_this._ctx.canvas.style.height)-IogoData.height)*IogoData.y,IogoData.width,IogoData.height);
+          _this._ctx.globalAlpha=1;
+          imgObjLoad=false;
+        }
+      }
     }
   }
 
