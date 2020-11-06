@@ -18,6 +18,7 @@ import { drawHorizontalLine, drawVerticalLine, getFont, drawLine } from '../util
 import { formatPrecision, formatValue } from '../utils/format'
 import { IogoData,labeledLine,masterMapHeightAlter,masterMapHeight } from '../data/ChartData'
 var imgObj=new Image();
+imgObj.setAttribute("crossOrigin",'anonymous');
 var imgObjLoad = true;
 export default class CandleStickView extends TechnicalIndicatorView {
   _draw () {
