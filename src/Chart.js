@@ -315,6 +315,12 @@ export default class Chart {
   }
 
   /**
+   * 移除所有标记图形数据
+   */
+  removeAllGraphicMarkData (name){
+    localStorage.removeItem(`${name}-graphic`);
+  }
+  /**
    * 移除所有标记图形
    */
   removeAllGraphicMark () {
@@ -323,7 +329,7 @@ export default class Chart {
     Object.keys(graphicMarkDatas).forEach(key => {
       newGraphicMarkDatas[key] = []
     })
-    this._chartPane.chartData().setGraphicMarkType(GraphicMarkType.NONE,true)
+    this._chartPane.chartData().setGraphicMarkType(GraphicMarkType.NONE, true)
     this._chartPane.chartData().setGraphicMarkData(newGraphicMarkDatas)
   }
 

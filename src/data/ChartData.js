@@ -783,9 +783,7 @@ export default class ChartData {
    */
   setGraphicMarkType (graphicMarkType, ifDelete) {
     this._graphicMarkType = graphicMarkType
-    if(ifDelete){
-      localStorage.removeItem(`${this._graphicPrefixName}-graphic`);
-    }else{
+    if(!ifDelete){
       this.isSetUpDrawing = true;
     }
   }

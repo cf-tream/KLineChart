@@ -359,6 +359,7 @@
         }
         shanchu.onclick = ()=>{
             kLineChart.setChannelName('BTC');
+            kLineChart.removeAllGraphicMarkData('BTC');
             kLineChart.removeAllGraphicMark();
         }
         // bug  刷新 再次点之前设置的指标会 自动重新选择
@@ -369,6 +370,10 @@
             kLineChart.setChannelName('BTC');
             kLineChart.recoveryGraphicMark(JSON.parse(localStorage.getItem('BTC-graphic')));
         }
+
+
+
+        
 
     </script>
     <script>
