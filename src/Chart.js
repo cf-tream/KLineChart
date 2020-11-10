@@ -299,6 +299,22 @@ export default class Chart {
   }
 
   /**
+   * 设置渠道名
+   * @param data
+   */
+  setChannelName (name) {
+    this._chartPane.chartData().saveChannelName(name);
+  }
+
+  /**
+   * 恢复图形标记
+   * @param data
+   */
+  recoveryGraphicMark (data) {
+    this._chartPane.chartData().setGraphicMarkData(data)
+  }
+
+  /**
    * 移除所有标记图形
    */
   removeAllGraphicMark () {
@@ -307,7 +323,7 @@ export default class Chart {
     Object.keys(graphicMarkDatas).forEach(key => {
       newGraphicMarkDatas[key] = []
     })
-    this._chartPane.chartData().setGraphicMarkType(GraphicMarkType.NONE)
+    this._chartPane.chartData().setGraphicMarkType(GraphicMarkType.NONE,true)
     this._chartPane.chartData().setGraphicMarkData(newGraphicMarkDatas)
   }
 

@@ -43,6 +43,9 @@
         <div id="basic-k-line" class="k-line-chart"></div>
         <button id="button">添加</button>
         <button id="shanchu">删除</button>
+        <button id="zhibiao">指标1</button>
+        <button id="zhibiao1">指标2</button>
+        <button id="zhibiao2">指标3</button>
         <p>2222222</p>
         <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p>
         <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p>
@@ -54,6 +57,7 @@
         <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p>
         <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p>
         <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p> <p>2222222</p>
+        
     </div>
     
     <!-- <div id="basic-k-line1" class="k-line-chart1"></div> -->
@@ -74,186 +78,45 @@
         for(let i=0;i<1000;i++){
             let suiji=Math.floor(Math.random() * 10);
             if(suiji>=5){
-                Kdata.push({ close: Math.floor(Math.random() * 100), high: Math.floor(Math.random() * 100), low: Math.floor(Math.random() * 100), open: Math.floor(Math.random() * 100), timestamp: 1587660000000, volume: Math.floor(Math.random() * 100)});
+                Kdata.push({ close: Math.floor(Math.random() * 100)+0.123, high: Math.floor(Math.random() * 100)+0.123, low: Math.floor(Math.random() * 100)+0.123, open: Math.floor(Math.random() * 100)+0.123, timestamp: 1587660000000+0.123, volume: Math.floor(Math.random() * 100)+0.123});
             }else{
-                Kdata.push({ close: Math.floor(Math.random() * 100), high: Math.floor(Math.random() * 100), low: Math.floor(Math.random() * 100), open: Math.floor(Math.random() * 100), timestamp: 1587660000000, volume: Math.floor(Math.random() * 100)});
+                Kdata.push({ close: Math.floor(Math.random() * 100)+0.123, high: Math.floor(Math.random() * 100)+0.123, low: Math.floor(Math.random() * 100)+0.123, open: Math.floor(Math.random() * 100)+0.123, timestamp: 1587660000000+0.123, volume: Math.floor(Math.random() * 100)+0.123});
             }
         }
+        // kLineChart.setCandleStickChartType('real_time')
+        console.log(Kdata);
         kLineChart.applyNewData(Kdata)
-        kLineChart.createTechnicalIndicator('MACD', 100);
-        kLineChart.createTechnicalIndicator('BOLL', 100);
-        
-        
-        
         
 
         // 水平轴提示
-        let axisData={
-            // 标记线文字提示
-            tooltip:'点击绿',
-            // 标记线值
-            value:50,
-            // x軸位置
-            shaftX: 50,
-            // 标记线固定
-            fixed: true,
-            data:{
-                PId: "01EDARSEEBSB5K42CPYA359TX234G",
-                name: 'number',
-                type:'text',
-                text: '0.12345',
-                color: '#62C794',
-                font: '14px bold 黑体',
-                background: '#fff',
-                width: 70,
-                height: 30,
-                borderLine: 1,
-                borderColor: '#62C794',
-                textOffsetTop: 10,
-                textOffsetLeft: 3
-            },
-            // 标记线条样式
-            lineStyle:{
-                // 标记线颜色
-                color: '#62C794',
-                dashValue: [3,4],
-                size: 1,
-                style: "dash"
-            },
-            // 标记文字样式
-            textStyle:{
-                color: "#000",
-                background: '#62C794',
-                family: "Helvetica Neue",
-                paddingBottom: 2,
-                paddingLeft: 2,
-                paddingRight: 2,
-                paddingTop: 2,
-                size: 12,
-                weight: "normal"
-            },
-            // 出现弹框样式
-            boxStyle:{
-                width: 240,
-                height: 30,
-                background: '#fff',
-                borderLine: 1,
-                borderColor: '#62C794',
-                borderRadius: 2,
-                item:[
-                    {
-                        name: 'number',
-                        type:'text',
-                        text: '0.12345',
-                        color: '#62C794',
-                        font: '14px bold 黑体',
-                        background: '#fff',
-                        width: 70,
-                        height: 30,
-                        borderLine: 1,
-                        borderColor: '#62C794',
-                        textOffsetTop: 16,
-                        textOffsetLeft: 3
-                    }, {
-                        name: 'sheet',
-                        type:'text',
-                        text: '100 张',
-                        color: '#fff        ',
-                        font: '14px bold 黑体',
-                        background: '#62C794',
-                        width: 80,
-                        height: 30,
-                        borderLine: 1,
-                        borderColor: '#62C794',
-                        textOffsetTop: 16,
-                        textOffsetLeft: 5
-                    }, {
-                        name: 'amend',
-                        event: 'amend',
-                        type:'text',
-                        text: '加',
-                        color: '#62C794',
-                        background: '#fff',
-                        width: 30,
-                        height: 30,
-                        imgWidth: 20,
-                        imgHeight: 20,
-                        borderLine: 0,
-                        borderColor: '#62C794',
-                        textOffsetTop: 16,
-                        textOffsetLeft: 5,
-                        clickable:true
-                    }, {
-                        name: 'fixed',
-                        event: 'fixed',
-                        type:'text',
-                        text: '減',
-                        color: '#62C794',
-                        background: '#fff',
-                        width: 30,
-                        height: 30,
-                        imgWidth: 20,
-                        imgHeight: 20,
-                        borderLine: 0,
-                        borderColor: '#62C794',
-                        textOffsetTop: 16,
-                        textOffsetLeft: 5,
-                        clickable:true
-                    }, {
-                        name:'delete',
-                        event: 'delete',
-                        type:'text',
-                        text: '刪',
-                        color: '#62C794',
-                        background: '#fff',
-                        width: 30,
-                        height: 30,
-                        imgWidth: 20,
-                        imgHeight: 20,
-                        borderLine: 0,
-                        borderColor: '#62C794',
-                        textOffsetTop: 16,
-                        textOffsetLeft: 5,
-                        clickable:true
-                    }
-                ]
-            },
-            // 回调函数
-            agentClick(item,data){
-                agentTrigger(item,data);
-            }
-        };
-        kLineChart.addLabeledLine(axisData,'PId');
-
-        // // 水平轴提示
-        // let axisData2={
+        // let axisData={
         //     // 标记线文字提示
-        //     tooltip:'点击蓝',
+        //     tooltip:'点击绿',
         //     // 标记线值
-        //     value:50,
+        //     value:50.123456,
         //     // x軸位置
         //     shaftX: 50,
         //     // 标记线固定
         //     fixed: true,
         //     data:{
-        //         PId: "01EDARSEEBSB5K42CPYA359TXG345",
+        //         PId: "01EDARSEEBSB5K42CPYA359TX234G",
         //         name: 'number',
         //         type:'text',
         //         text: '0.12345',
-        //         color: 'blue',
+        //         color: '#62C794',
         //         font: '14px bold 黑体',
         //         background: '#fff',
         //         width: 70,
         //         height: 30,
         //         borderLine: 1,
-        //         borderColor: 'blue',
+        //         borderColor: '#62C794',
         //         textOffsetTop: 10,
         //         textOffsetLeft: 3
         //     },
         //     // 标记线条样式
         //     lineStyle:{
         //         // 标记线颜色
-        //         color: 'blue',
+        //         color: '#62C794',
         //         dashValue: [3,4],
         //         size: 1,
         //         style: "dash"
@@ -261,7 +124,7 @@
         //     // 标记文字样式
         //     textStyle:{
         //         color: "#000",
-        //         background: '#fff',
+        //         background: '#62C794',
         //         family: "Helvetica Neue",
         //         paddingBottom: 2,
         //         paddingLeft: 2,
@@ -276,33 +139,33 @@
         //         height: 30,
         //         background: '#fff',
         //         borderLine: 1,
-        //         borderColor: 'blue',
+        //         borderColor: '#62C794',
         //         borderRadius: 2,
         //         item:[
         //             {
         //                 name: 'number',
         //                 type:'text',
-        //                 text: '0.45687',
-        //                 color: 'blue',
+        //                 text: '0.12345',
+        //                 color: '#62C794',
         //                 font: '14px bold 黑体',
         //                 background: '#fff',
         //                 width: 70,
         //                 height: 30,
         //                 borderLine: 1,
-        //                 borderColor: 'blue',
+        //                 borderColor: '#62C794',
         //                 textOffsetTop: 16,
         //                 textOffsetLeft: 3
         //             }, {
         //                 name: 'sheet',
         //                 type:'text',
-        //                 text: '103 张',
+        //                 text: '100 张',
         //                 color: '#fff        ',
         //                 font: '14px bold 黑体',
-        //                 background: 'blue',
+        //                 background: '#62C794',
         //                 width: 80,
         //                 height: 30,
         //                 borderLine: 1,
-        //                 borderColor: 'blue',
+        //                 borderColor: '#62C794',
         //                 textOffsetTop: 16,
         //                 textOffsetLeft: 5
         //             }, {
@@ -310,14 +173,14 @@
         //                 event: 'amend',
         //                 type:'text',
         //                 text: '加',
-        //                 color: 'blue',
+        //                 color: '#62C794',
         //                 background: '#fff',
         //                 width: 30,
         //                 height: 30,
         //                 imgWidth: 20,
         //                 imgHeight: 20,
         //                 borderLine: 0,
-        //                 borderColor: 'blue',
+        //                 borderColor: '#62C794',
         //                 textOffsetTop: 16,
         //                 textOffsetLeft: 5,
         //                 clickable:true
@@ -326,14 +189,14 @@
         //                 event: 'fixed',
         //                 type:'text',
         //                 text: '減',
-        //                 color: 'blue',
+        //                 color: '#62C794',
         //                 background: '#fff',
         //                 width: 30,
         //                 height: 30,
         //                 imgWidth: 20,
         //                 imgHeight: 20,
         //                 borderLine: 0,
-        //                 borderColor: 'blue',
+        //                 borderColor: '#62C794',
         //                 textOffsetTop: 16,
         //                 textOffsetLeft: 5,
         //                 clickable:true
@@ -342,14 +205,14 @@
         //                 event: 'delete',
         //                 type:'text',
         //                 text: '刪',
-        //                 color: 'blue',
+        //                 color: '#62C794',
         //                 background: '#fff',
         //                 width: 30,
         //                 height: 30,
         //                 imgWidth: 20,
         //                 imgHeight: 20,
         //                 borderLine: 0,
-        //                 borderColor: 'blue',
+        //                 borderColor: '#62C794',
         //                 textOffsetTop: 16,
         //                 textOffsetLeft: 5,
         //                 clickable:true
@@ -361,382 +224,152 @@
         //         agentTrigger(item,data);
         //     }
         // };
-        // kLineChart.addLabeledLine(axisData2,'PId');
+        // kLineChart.addLabeledLine(axisData,'PId');
 
-        // // 水平轴提示
-        // let axisData3={
-        //     // 标记线文字提示
-        //     tooltip:'点击红',
-        //     // 标记线值
-        //     value:50,
-        //     // x軸位置
-        //     shaftX: 80,
-        //     // 标记线固定
-        //     fixed: true,
-        //     data:{
-        //         PId: "01EDARSEEBSB5K42CPYA359TXG123",
-        //         name: 'number',
-        //         type:'text',
-        //         text: '0.12345',
-        //         color: 'red',
-        //         font: '14px bold 黑体',
-        //         background: '#fff',
-        //         width: 70,
-        //         height: 30,
-        //         borderLine: 1,
-        //         borderColor: 'red',
-        //         textOffsetTop: 10,
-        //         textOffsetLeft: 3
-        //     },
-        //     // 标记线条样式
-        //     lineStyle:{
-        //         // 标记线颜色
-        //         color: 'red',
-        //         dashValue: [3,4],
-        //         size: 1,
-        //         style: "dash"
-        //     },
-        //     // 标记文字样式
-        //     textStyle:{
-        //         color: "#000",
-        //         background: '#fff',
-        //         family: "Helvetica Neue",
-        //         paddingBottom: 2,
-        //         paddingLeft: 2,
-        //         paddingRight: 2,
-        //         paddingTop: 2,
-        //         size: 12,
-        //         weight: "normal"
-        //     },
-        //     // 出现弹框样式
-        //     boxStyle:{
-        //         width: 240,
-        //         height: 30,
-        //         background: '#fff',
-        //         borderLine: 1,
-        //         borderColor: 'red',
-        //         borderRadius: 2,
-        //         item:[
+        
+        // kLineChart.refreshTheView();
+
+        // function agentTrigger(item,data){
+        //     if(item.event=="amend"){    //修改方法
+        //         let sum=parseInt(data.boxStyle.item[1].text);
+        //         sum++;
+        //         let random= Math.random().toFixed(5);
+        //         let modify=[
         //             {
+        //                 name: 'data',
+        //                 data:{
+        //                     PId: "01EDARSEEBSB5K42CPYA359TX234G",
+        //                     name: 'number',
+        //                     type:'text',
+        //                     text: '0.12345',
+        //                     color: '#62C794',
+        //                     font: '14px bold 黑体',
+        //                     background: '#fff',
+        //                     width: 70,
+        //                     height: 30,
+        //                     borderLine: 1,
+        //                     borderColor: '#62C794',
+        //                     textOffsetTop: 10,
+        //                     textOffsetLeft: 3
+        //                 }
+        //             }, {   // main修改主体
+        //                 name:'main'
+        //             }, { // 标记线条
+        //                 name: 'lineStyle'
+        //             }, { // 标记文字
+        //                 name: 'textStyle'
+        //             }, {  // 弹框样式
+        //                 name: 'boxStyle',
+        //                 item: [
+        //                     {
+        //                         name: 'number',
+        //                         text: random
+        //                     }, {
+        //                         name: 'sheet',
+        //                         text: `${sum} 张`
+        //                     }
+        //                 ]
+        //             }
+        //         ]
+        //         kLineChart.modifyLabeledLine(data.id,modify);
+        //         kLineChart.refreshTheView();
+        //     }else if(item.event=="delete"){ //删除方法
+        //         kLineChart.deleteLabeledLine(data.id);
+        //         kLineChart.refreshTheView();
+        //     }
+        // }
+
+        
+
+
+        // let but=document.getElementById('button');
+        // but.onclick=()=>{
+        //     let random= Math.random().toFixed(5);
+        //     let modify=[
+        //         {
+        //             name: 'data',
+        //             data:{
+        //                 PId: "01EDARSEEBSB5K42CPYA359TX234G",
         //                 name: 'number',
         //                 type:'text',
-        //                 text: '0.45687',
-        //                 color: 'red',
+        //                 text: '0.12345',
+        //                 color: '#62C794',
         //                 font: '14px bold 黑体',
         //                 background: '#fff',
         //                 width: 70,
         //                 height: 30,
         //                 borderLine: 1,
-        //                 borderColor: 'red',
-        //                 textOffsetTop: 16,
+        //                 borderColor: '#62C794',
+        //                 textOffsetTop: 10,
         //                 textOffsetLeft: 3
-        //             }, {
-        //                 name: 'sheet',
-        //                 type:'text',
-        //                 text: '103 张',
-        //                 color: '#fff        ',
-        //                 font: '14px bold 黑体',
-        //                 background: 'red',
-        //                 width: 80,
-        //                 height: 30,
-        //                 borderLine: 1,
-        //                 borderColor: 'red',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5
-        //             }, {
-        //                 name: 'amend',
-        //                 event: 'amend',
-        //                 type:'text',
-        //                 text: '加',
-        //                 color: 'red',
-        //                 background: '#fff',
-        //                 width: 30,
-        //                 height: 30,
-        //                 imgWidth: 20,
-        //                 imgHeight: 20,
-        //                 borderLine: 0,
-        //                 borderColor: 'red',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5,
-        //                 clickable:true
-        //             }, {
-        //                 name: 'fixed',
-        //                 event: 'fixed',
-        //                 type:'text',
-        //                 text: '減',
-        //                 color: 'red',
-        //                 background: '#fff',
-        //                 width: 30,
-        //                 height: 30,
-        //                 imgWidth: 20,
-        //                 imgHeight: 20,
-        //                 borderLine: 0,
-        //                 borderColor: 'red',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5,
-        //                 clickable:true
-        //             }, {
-        //                 name:'delete',
-        //                 event: 'delete',
-        //                 type:'text',
-        //                 text: '刪',
-        //                 color: 'red',
-        //                 background: '#fff',
-        //                 width: 30,
-        //                 height: 30,
-        //                 imgWidth: 20,
-        //                 imgHeight: 20,
-        //                 borderLine: 0,
-        //                 borderColor: 'red',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5,
-        //                 clickable:true
         //             }
-        //         ]
-        //     },
-        //     // 回调函数
-        //     agentClick(item,data){
-        //         agentTrigger(item,data);
-        //     }
-        // };
-        // kLineChart.addLabeledLine(axisData3,'PId');
+        //         },
+        //         {  // 弹框样式
+        //             name: 'boxStyle',
+        //             item: [
+        //                 {
+        //                     name: 'number',
+        //                     text: random
+        //                 }
+        //             ]
+        //         }
+        //     ]
+        //     kLineChart.modifyLabeledLine(axisData.data.PId,modify);
+        //     kLineChart.refreshTheView();
+        // }
 
-        // // 水平轴提示
-        // let axisData4={
-        //     // 标记线文字提示
-        //     tooltip:'点击黄',
-        //     // 标记线值
-        //     value:50,
-        //     // x軸位置
-        //     shaftX: 110,
-        //     // 标记线固定
-        //     fixed: true,
-        //     data:{
-        //         PId: "01EDARSEEBSB5K42CPYA359TXG345",
-        //         name: 'number',
-        //         type:'text',
-        //         text: '0.12345',
-        //         color: 'yellow',
-        //         font: '14px bold 黑体',
-        //         background: '#fff',
-        //         width: 70,
-        //         height: 30,
-        //         borderLine: 1,
-        //         borderColor: 'yellow',
-        //         textOffsetTop: 10,
-        //         textOffsetLeft: 3
-        //     },
-        //     // 标记线条样式
-        //     lineStyle:{
-        //         // 标记线颜色
-        //         color: 'yellow',
-        //         dashValue: [3,4],
-        //         size: 1,
-        //         style: "dash"
-        //     },
-        //     // 标记文字样式
-        //     textStyle:{
-        //         color: "#000",
-        //         background: '#fff',
-        //         family: "Helvetica Neue",
-        //         paddingBottom: 2,
-        //         paddingLeft: 2,
-        //         paddingRight: 2,
-        //         paddingTop: 2,
-        //         size: 12,
-        //         weight: "normal"
-        //     },
-        //     // 出现弹框样式
-        //     boxStyle:{
-        //         width: 240,
-        //         height: 30,
-        //         background: '#fff',
-        //         borderLine: 1,
-        //         borderColor: 'yellow',
-        //         borderRadius: 2,
-        //         item:[
-        //             {
-        //                 name: 'number',
-        //                 type:'text',
-        //                 text: '0.45687',
-        //                 color: 'yellow',
-        //                 font: '14px bold 黑体',
-        //                 background: '#fff',
-        //                 width: 70,
-        //                 height: 30,
-        //                 borderLine: 1,
-        //                 borderColor: 'yellow',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 3
-        //             }, {
-        //                 name: 'sheet',
-        //                 type:'text',
-        //                 text: '103 张',
-        //                 color: '#fff        ',
-        //                 font: '14px bold 黑体',
-        //                 background: 'yellow',
-        //                 width: 80,
-        //                 height: 30,
-        //                 borderLine: 1,
-        //                 borderColor: 'yellow',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5
-        //             }, {
-        //                 name: 'amend',
-        //                 event: 'amend',
-        //                 type:'text',
-        //                 text: '加',
-        //                 color: 'yellow',
-        //                 background: '#fff',
-        //                 width: 30,
-        //                 height: 30,
-        //                 imgWidth: 20,
-        //                 imgHeight: 20,
-        //                 borderLine: 0,
-        //                 borderColor: 'yellow',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5,
-        //                 clickable:true
-        //             }, {
-        //                 name: 'fixed',
-        //                 event: 'fixed',
-        //                 type:'text',
-        //                 text: '減',
-        //                 color: 'yellow',
-        //                 background: '#fff',
-        //                 width: 30,
-        //                 height: 30,
-        //                 imgWidth: 20,
-        //                 imgHeight: 20,
-        //                 borderLine: 0,
-        //                 borderColor: 'yellow',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5,
-        //                 clickable:true
-        //             }, {
-        //                 name:'delete',
-        //                 event: 'delete',
-        //                 type:'text',
-        //                 text: '刪',
-        //                 color: 'yellow',
-        //                 background: '#fff',
-        //                 width: 30,
-        //                 height: 30,
-        //                 imgWidth: 20,
-        //                 imgHeight: 20,
-        //                 borderLine: 0,
-        //                 borderColor: 'yellow',
-        //                 textOffsetTop: 16,
-        //                 textOffsetLeft: 5,
-        //                 clickable:true
-        //             }
-        //         ]
-        //     },
-        //     // 回调函数
-        //     agentClick(item,data){
-        //         agentTrigger(item,data);
-        //     }
-        // };
-        // kLineChart.addLabeledLine(axisData4, 'PId');
-        kLineChart.refreshTheView();
 
-        function agentTrigger(item,data){
-            if(item.event=="amend"){    //修改方法
-                let sum=parseInt(data.boxStyle.item[1].text);
-                sum++;
-                let random= Math.random().toFixed(5);
-                let modify=[
-                    {
-                        name: 'data',
-                        data:{
-                            PId: "01EDARSEEBSB5K42CPYA359TX234G",
-                            name: 'number',
-                            type:'text',
-                            text: '0.12345',
-                            color: '#62C794',
-                            font: '14px bold 黑体',
-                            background: '#fff',
-                            width: 70,
-                            height: 30,
-                            borderLine: 1,
-                            borderColor: '#62C794',
-                            textOffsetTop: 10,
-                            textOffsetLeft: 3
-                        }
-                    }, {   // main修改主体
-                        name:'main'
-                    }, { // 标记线条
-                        name: 'lineStyle'
-                    }, { // 标记文字
-                        name: 'textStyle'
-                    }, {  // 弹框样式
-                        name: 'boxStyle',
-                        item: [
-                            {
-                                name: 'number',
-                                text: random
-                            }, {
-                                name: 'sheet',
-                                text: `${sum} 张`
-                            }
-                        ]
-                    }
-                ]
-                kLineChart.modifyLabeledLine(data.id,modify);
-                kLineChart.refreshTheView();
-            }else if(item.event=="delete"){ //删除方法
-                kLineChart.deleteLabeledLine(data.id);
-                kLineChart.refreshTheView();
-            }
+
+
+
+
+
+
+        // let logoData={
+        //     width:'180',
+        //     height: '35',
+        //     x:1,
+        //     y:0.9,
+        //     imgUrl: "https://fanyi-cdn.cdn.bcebos.com/static/translation/img/header/logo_40c4f13.svg",
+        //     opacity: 0.5
+        // }
+        // kLineChart.setLogoData(logoData);
+        // kLineChart.refreshTheView();
+        // kLineChart.getTechnicalIndicatorParams(technicalIndicatorType)
+        kLineChart.createTechnicalIndicator('MACD', 100);
+        kLineChart.createTechnicalIndicator('BOLL', 100);
+        kLineChart.setCandleStickTechnicalIndicatorType('MACD');
+        kLineChart.setCandleStickTechnicalIndicatorType('BOLL');
+        
+        var zhibiao = document.getElementById('zhibiao');
+        var zhibiao1 = document.getElementById('zhibiao1');
+        var zhibiao2 = document.getElementById('zhibiao2');
+        var shanchu = document.getElementById('shanchu');
+        zhibiao.onclick = ()=>{
+            kLineChart.setChannelName('BTC');
+            kLineChart.addGraphicMark('priceChannelLine');
+        }
+        zhibiao1.onclick = ()=>{
+            kLineChart.setChannelName('BTC');
+            kLineChart.addGraphicMark('fibonacciLine');
+        }
+        zhibiao2.onclick = ()=>{
+            kLineChart.setChannelName('BTC');
+            kLineChart.addGraphicMark('priceLine');
+        }
+        shanchu.onclick = ()=>{
+            kLineChart.setChannelName('BTC');
+            kLineChart.removeAllGraphicMark();
+        }
+        // bug  刷新 再次点之前设置的指标会 自动重新选择
+        console.log('-------------');
+        console.log(localStorage.getItem('BTC-graphic'));
+
+        if(localStorage.getItem('BTC-graphic') && localStorage.getItem('BTC-graphic').length>4){
+            kLineChart.setChannelName('BTC');
+            kLineChart.recoveryGraphicMark(JSON.parse(localStorage.getItem('BTC-graphic')));
         }
 
-        
-
-
-        let but=document.getElementById('button');
-        but.onclick=()=>{
-            let random= Math.random().toFixed(5);
-            let modify=[
-                {
-                    name: 'data',
-                    data:{
-                        PId: "01EDARSEEBSB5K42CPYA359TX234G",
-                        name: 'number',
-                        type:'text',
-                        text: '0.12345',
-                        color: '#62C794',
-                        font: '14px bold 黑体',
-                        background: '#fff',
-                        width: 70,
-                        height: 30,
-                        borderLine: 1,
-                        borderColor: '#62C794',
-                        textOffsetTop: 10,
-                        textOffsetLeft: 3
-                    }
-                },
-                {  // 弹框样式
-                    name: 'boxStyle',
-                    item: [
-                        {
-                            name: 'number',
-                            text: random
-                        }
-                    ]
-                }
-            ]
-            kLineChart.modifyLabeledLine(axisData.data.PId,modify);
-            kLineChart.refreshTheView();
-        }
-        let shanchu=document.getElementById('shanchu');
-        shanchu.onclick=()=>{
-            kLineChart.deleteLabeledLine(axisData.data.PId);
-            kLineChart.refreshTheView();
-        }
-
-        
- 
-        
     </script>
     <script>
         var html = document.documentElement;

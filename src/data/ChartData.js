@@ -206,6 +206,10 @@ export function masterMapHeightAlter(data){
 
 export default class ChartData {
   constructor (styleOptions, invalidateHandler) {
+    // 标记线储存的前缀名name
+    this._graphicPrefixName = null
+    // 是否设置画图
+    this.isSetUpDrawing = false
     // 刷新持有者
     this._invalidateHandler = invalidateHandler
     // 样式配置
@@ -310,6 +314,14 @@ export default class ChartData {
     this.timer=null;
     // 是否是进入到浮框后进入外面
     this.afterFloatBox=false;
+  }
+
+  /**
+   * 保存渠道名
+   * @private
+   */
+  saveChannelName( name ){
+    this._graphicPrefixName = name;
   }
 
   /**
@@ -769,8 +781,13 @@ export default class ChartData {
    * 设置图形标记类型
    * @param graphicMarkType
    */
-  setGraphicMarkType (graphicMarkType) {
+  setGraphicMarkType (graphicMarkType, ifDelete) {
     this._graphicMarkType = graphicMarkType
+    if(ifDelete){
+      localStorage.removeItem(`${this._graphicPrefixName}-graphic`);
+    }else{
+      this.isSetUpDrawing = true;
+    }
   }
 
   /**

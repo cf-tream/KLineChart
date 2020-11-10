@@ -57,7 +57,6 @@ export default class GraphicMarkEventHandler extends EventHandler {
    */
   mouseUpEvent (event) {
     this._chartData.setDragGraphicMarkFlag(false)
-    this._noneGraphicMarkMouseDownFlag = false
     this._noneGraphicMarkMouseDownActiveData = {
       markKey: null,
       dataIndex: -1,
@@ -65,6 +64,14 @@ export default class GraphicMarkEventHandler extends EventHandler {
       onCircle: false,
       pointIndex: -1
     }
+    if(this._chartData.isSetUpDrawing){
+      localStorage.setItem(`${this._chartData._graphicPrefixName}-graphic`, JSON.stringify(this._chartData.graphicMarkData()));
+      this._chartData.isSetUpDrawing = false;
+    }
+    if(this._noneGraphicMarkMouseDownFlag){
+      localStorage.setItem(`${this._chartData._graphicPrefixName}-graphic`, JSON.stringify(this._chartData.graphicMarkData()));
+    }
+    this._noneGraphicMarkMouseDownFlag = false
   }
 
   /**
