@@ -162,7 +162,7 @@ export function getTechnicalIndicatorInfo (technicalIndicatorData = {}, technica
     let y
     if (isValid(value)) {
       y = yAxis.convertToPixel(value)
-      value = formatPrecision(value, precision ,4)
+      value = formatPrecision(value, precision)
       if (shouldFormatBigNumber) {
         value = formatBigNumber(value)
       }
